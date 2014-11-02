@@ -25,8 +25,11 @@
         var serialized = [].map.call(arguments, serialize);
         return Array.prototype.push.apply(this, serialized);
     };
-    stack.popInt = function() {
-        return deserialize(this.pop());
+    stack.pop = function() {
+        return deserialize(Array.prototype.pop.apply(this));
+    };
+    stack.popString = function() {
+        return Array.prototype.pop.apply(this);
     };
 %}
 
@@ -75,7 +78,7 @@
 expressions
     : e EOF
         %{
-            var js = beautify($e) + 'console.log(stack);';
+            var js = beautify($e);
             console.log(js);
             console.log(eval(js));
         %}
@@ -120,38 +123,38 @@ e
         %}
     | OP_1ADD e
         %{
-            $$ = 'stack.push(stack.popInt().add(1));' + $e;
+            $$ = 'stack.push(stack.pop().add(1));' + $e;
         %}
     | OP_1SUB e
         %{
-            $$ = 'stack.push(stack.popInt().minus(1));' + $e;
+            $$ = 'stack.push(stack.pop().minus(1));' + $e;
         %}
     | OP_NEGATE e
         %{
-            $$ = 'stack.push(stack.popInt().multiply(-1));' + $e;
+            $$ = 'stack.push(stack.pop().multiply(-1));' + $e;
         %}
     | OP_ABS e
         %{
-            $$ = 'stack.push(stack.popInt().abs());' + $e;
+            $$ = 'stack.push(stack.pop().abs());' + $e;
         %}
     | OP_RIPEMD160 e
         %{
-            $$ = 'stack.push(ripemd160(stack.pop()));' + $e;
+            $$ = 'stack.push(ripemd160(stack.popString()));' + $e;
         %}
     | OP_SHA1 e
         %{
-            $$ = 'stack.push(sha1(stack.pop()));' + $e;
+            $$ = 'stack.push(sha1(stack.popString()));' + $e;
         %}
     | OP_SHA256 e
         %{
-            $$ = 'stack.push(sha256(stack.pop()));' + $e;
+            $$ = 'stack.push(sha256(stack.popString()));' + $e;
         %}
     | OP_HASH160 e
         %{
-            $$ = 'stack.push(ripemd160(sha256(stack.pop())));' + $e;
+            $$ = 'stack.push(ripemd160(sha256(stack.popString())));' + $e;
         %}
     | OP_HASH256 e
         %{
-            $$ = 'stack.push(sha256(sha256(stack.pop())));' + $e;
+            $$ = 'stack.push(sha256(sha256(stack.popString())));' + $e;
         %}
     ;
