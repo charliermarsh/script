@@ -10,8 +10,22 @@
 
     // Other utilities
     var beautify = require('js-beautify').js_beautify;
+    var base = 16;
     var serialize = function(data) {
-        return parseInt(data, 16);
+        return data.toString(base);
+    };
+    var deserialize = function(data) {
+        return parseInt(data, base);
+    };
+
+    // Setup
+    var stack = [];
+    stack.push = function() {
+        var serialized = [].map.call(arguments, serialize);
+        return Array.prototype.push.apply(this, serialized);
+    };
+    stack.popInt = function() {
+        return deserialize(this.pop());
     };
 %}
 
@@ -23,15 +37,23 @@
 "OP_NOP"                  { /* skip no-ops */ }
 0x([0-9]|[A-F]|[a-f])+\b  { return 'DATA'; }
 /* Constants */
+"OP_0"                    { return 'OP_0'; }
+"OP_FALSE"                { return 'OP_0'; }
 "OP_1"                    { return 'OP_1'; }
+"OP_TRUE"                 { return 'OP_1'; }
 /* Flow control */
 "OP_VERIFY"               { return 'OP_VERIFY'; }
 "OP_RETURN"               { return 'OP_RETURN'; }
 /* Stack */
 "OP_DROP"                 { return 'OP_DROP'; }
 "OP_DUP"                  { return 'OP_DUP'; }
+"OP_SWAP"                 { return 'OP_SWAP'; }
 /* Bitwise logic */
 "OP_EQUAL"                { return 'OP_EQUAL'; }
+/* Arithmetic */
+"OP_1ADD"                 { return 'OP_1ADD'; }
+"OP_1SUB"                 { return 'OP_1SUB'; }
+"OP_NEGATE"               { return 'OP_NEGATE'; }
 /* Crypto */
 "OP_RIPEMD160"            { return 'OP_RIPEMD160'; }
 "OP_SHA1"                 { return 'OP_SHA1'; }
@@ -51,7 +73,7 @@
 expressions
     : e EOF
         %{
-            var js = beautify('var stack = [];' + $e);
+            var js = beautify($e) + 'console.log(stack);';
             console.log(js);
             console.log(eval(js));
         %}
@@ -60,7 +82,11 @@ expressions
 e
     : DATA e
         %{
-            $$ = 'stack.push(serialize(' + $1 + '));' + $e;
+            $$ = 'stack.push(' + $1 + ');' + $e;
+        %}
+    | OP_0 e
+        %{
+            $$ = 'stack.push(0);' + $e;
         %}
     | OP_1 e
         %{
@@ -82,9 +108,25 @@ e
         %{
             $$ = 'var data = stack.pop(); stack.push(data); stack.push(data);' + $e;
         %}
+    | OP_SWAP e
+        %{
+            $$ = 'var u = stack.pop(); var v = stack.pop(); stack.push(u); stack.push(v);' + $e;
+        %}
     | OP_EQUAL e
         %{
             $$ = 'if (stack.pop() === stack.pop()) { stack.push(1); } else { stack.push(0); }; ' + $e;
+        %}
+    | OP_1ADD e
+        %{
+            $$ = 'stack.push(stack.popInt() + 1);' + $e;
+        %}
+    | OP_1SUB e
+        %{
+            $$ = 'stack.push(stack.popInt() - 1);' + $e;
+        %}
+    | OP_NEGATE e
+        %{
+            $$ = 'stack.push(-stack.popInt());' + $e;
         %}
     | OP_RIPEMD160 e
         %{
