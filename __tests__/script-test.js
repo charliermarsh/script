@@ -33,6 +33,28 @@ describe('stack', function() {
     });
 });
 
+describe('arithmetic', function() {
+    it('correctly increments', function() {
+        var script = 'OP_0 OP_1ADD OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly decrements', function() {
+        var script = 'OP_1 OP_1SUB OP_VERIFY';
+        expect(exec(script)).toBe(false);
+    });
+
+    it('correctly negates', function() {
+        var script = 'OP_1 OP_NEGATE OP_1ADD OP_VERIFY';
+        expect(exec(script)).toBe(false);
+    });
+
+    it('correctly computes absolute value', function() {
+        var script = 'OP_0 OP_1SUB OP_ABS OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+});
+
 describe('crypto', function() {
     it('generates different hashes for different values', function() {
         var script = 'OP_1 OP_HASH256 OP_0 OP_HASH256 OP_EQUAL OP_VERIFY';

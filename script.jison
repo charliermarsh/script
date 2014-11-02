@@ -29,19 +29,22 @@
     };
 
     // Setup
-    var stack = [];
-    stack.push = function() {
-        debug && console.log("Pre-push:", this);
-        var serialized = [].map.call(arguments, serialize);
-        Array.prototype.push.apply(this, serialized);
-        debug && console.log("Post-push:", this);
+    var ScriptStack = function() {
+        this.push = function() {
+            debug && console.log("Pre-push:", this);
+            var serialized = [].map.call(arguments, serialize);
+            var result = Array.prototype.push.apply(this, serialized);
+            debug && console.log("Post-push:", this);
+            return result;
+        };
+        this.pop = function() {
+            debug && console.log("Pre-pop:", this);
+            var result = deserialize(Array.prototype.pop.apply(this));
+            debug && console.log("Post-pop:", this);
+            return result;
+        };
     };
-    stack.pop = function() {
-        debug && console.log("Pre-pop:", this);
-        var result = deserialize(Array.prototype.pop.apply(this));
-        debug && console.log("Post-pop:", this);
-        return result;
-    };
+    ScriptStack.prototype = [];
 %}
 
 /* lexical grammar */
@@ -89,7 +92,8 @@
 expressions
     : e EOF
         %{
-            var js = beautify($e);
+            debug && console.log("------------------");
+            var js = beautify('var stack = new ScriptStack();' + $e);
             return eval(js);
         %}
     ;
