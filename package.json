@@ -2,6 +2,7 @@
   "name": "Script.js",
   "description": "Compile Bitcoin Script to JavaScript.",
   "dependencies": {
+    "big-integer": "^1.3.17",
     "js-beautify": "^1.5.4",
     "ripemd160": "^0.2.0",
     "sha1": "^1.1.0",

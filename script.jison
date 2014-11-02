@@ -9,13 +9,14 @@
     var sha256 = require('sha256');
 
     // Other utilities
+    var bigInt = require("big-integer");
     var beautify = require('js-beautify').js_beautify;
     var base = 16;
     var serialize = function(data) {
         return data.toString(base);
     };
     var deserialize = function(data) {
-        return parseInt(data, base);
+        return bigInt(data, base);
     };
 
     // Setup
@@ -54,6 +55,7 @@
 "OP_1ADD"                 { return 'OP_1ADD'; }
 "OP_1SUB"                 { return 'OP_1SUB'; }
 "OP_NEGATE"               { return 'OP_NEGATE'; }
+"OP_ABS"                  { return 'OP_ABS'; }
 /* Crypto */
 "OP_RIPEMD160"            { return 'OP_RIPEMD160'; }
 "OP_SHA1"                 { return 'OP_SHA1'; }
@@ -118,15 +120,19 @@ e
         %}
     | OP_1ADD e
         %{
-            $$ = 'stack.push(stack.popInt() + 1);' + $e;
+            $$ = 'stack.push(stack.popInt().add(1));' + $e;
         %}
     | OP_1SUB e
         %{
-            $$ = 'stack.push(stack.popInt() - 1);' + $e;
+            $$ = 'stack.push(stack.popInt().minus(1));' + $e;
         %}
     | OP_NEGATE e
         %{
-            $$ = 'stack.push(-stack.popInt());' + $e;
+            $$ = 'stack.push(stack.popInt().multiply(-1));' + $e;
+        %}
+    | OP_ABS e
+        %{
+            $$ = 'stack.push(stack.popInt().abs());' + $e;
         %}
     | OP_RIPEMD160 e
         %{
