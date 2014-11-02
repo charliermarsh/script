@@ -1,17 +1,26 @@
 /* description: Parses end executes mathematical expressions. */
 
 %{
+    var base = 16;
+    var debug = false;
+
     // Crypto
     var ripemd160 = function(data) {
+        data = data.toString(base);
         return require('ripemd160')(data).toString('hex');
     };
-    var sha1 = require('sha1');
-    var sha256 = require('sha256');
+    var sha1 = function(data) {
+        data = data.toString(base);
+        return require('sha1')(data);
+    };
+    var sha256 = function(data) {
+        data = data.toString(base);
+        return require('sha256')(data);
+    };
 
     // Other utilities
     var bigInt = require('big-integer');
     var beautify = require('js-beautify').js_beautify;
-    var base = 16;
     var serialize = function(data) {
         return data.toString(base);
     };
@@ -22,14 +31,16 @@
     // Setup
     var stack = [];
     stack.push = function() {
+        debug && console.log("Pre-push:", this);
         var serialized = [].map.call(arguments, serialize);
-        return Array.prototype.push.apply(this, serialized);
+        Array.prototype.push.apply(this, serialized);
+        debug && console.log("Post-push:", this);
     };
     stack.pop = function() {
-        return deserialize(Array.prototype.pop.apply(this));
-    };
-    stack.popString = function() {
-        return Array.prototype.pop.apply(this);
+        debug && console.log("Pre-pop:", this);
+        var result = deserialize(Array.prototype.pop.apply(this));
+        debug && console.log("Post-pop:", this);
+        return result;
     };
 %}
 
@@ -118,7 +129,7 @@ e
         %}
     | OP_EQUAL e
         %{
-            $$ = 'if (stack.pop() === stack.pop()) { stack.push(1); } else { stack.push(0); }; ' + $e;
+            $$ = 'if (stack.pop().equals(stack.pop())) { stack.push(1); } else { stack.push(0); }; ' + $e;
         %}
     | OP_1ADD e
         %{
@@ -138,22 +149,22 @@ e
         %}
     | OP_RIPEMD160 e
         %{
-            $$ = 'stack.push(ripemd160(stack.popString()));' + $e;
+            $$ = 'stack.push(ripemd160(stack.pop()));' + $e;
         %}
     | OP_SHA1 e
         %{
-            $$ = 'stack.push(sha1(stack.popString()));' + $e;
+            $$ = 'stack.push(sha1(stack.pop()));' + $e;
         %}
     | OP_SHA256 e
         %{
-            $$ = 'stack.push(sha256(stack.popString()));' + $e;
+            $$ = 'stack.push(sha256(stack.pop()));' + $e;
         %}
     | OP_HASH160 e
         %{
-            $$ = 'stack.push(ripemd160(sha256(stack.popString())));' + $e;
+            $$ = 'stack.push(ripemd160(sha256(stack.pop())));' + $e;
         %}
     | OP_HASH256 e
         %{
-            $$ = 'stack.push(sha256(sha256(stack.popString())));' + $e;
+            $$ = 'stack.push(sha256(sha256(stack.pop())));' + $e;
         %}
     ;
