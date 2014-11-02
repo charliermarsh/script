@@ -16,6 +16,23 @@ describe('valid', function() {
     });
 });
 
+describe('stack', function() {
+    it('correctly duplicates', function() {
+        var script = 'OP_1 OP_DUP OP_EQUAL OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly drops', function() {
+        var script = 'OP_1 OP_0 OP_DROP OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly swaps', function() {
+        var script = 'OP_1 OP_0 OP_SWAP OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+});
+
 describe('crypto', function() {
     it('generates different hashes for different values', function() {
         var script = 'OP_1 OP_HASH256 OP_0 OP_HASH256 OP_EQUAL OP_VERIFY';
