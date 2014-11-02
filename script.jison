@@ -1,11 +1,15 @@
 /* description: Parses end executes mathematical expressions. */
 
 %{
+    // Crypto
     var ripemd160 = function(data) {
         return require('ripemd160')(data).toString('hex');
     };
     var sha1 = require('sha1');
     var sha256 = require('sha256');
+
+    // Other utilities
+    var beautify = require('js-beautify').js_beautify;
     var serialize = function(data) {
         return parseInt(data, 16);
     };
@@ -47,7 +51,7 @@
 expressions
     : e EOF
         %{
-            var js = 'var stack = [];' + $e;
+            var js = beautify('var stack = [];' + $e);
             console.log(js);
             console.log(eval(js));
         %}
