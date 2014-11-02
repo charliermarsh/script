@@ -9,7 +9,7 @@
     var sha256 = require('sha256');
 
     // Other utilities
-    var bigInt = require("big-integer");
+    var bigInt = require('big-integer');
     var beautify = require('js-beautify').js_beautify;
     var base = 16;
     var serialize = function(data) {
@@ -79,8 +79,7 @@ expressions
     : e EOF
         %{
             var js = beautify($e);
-            console.log(js);
-            console.log(eval(js));
+            return eval(js);
         %}
     ;
 
@@ -99,7 +98,7 @@ e
         %}
     | OP_VERIFY
         %{
-            $$ = '(stack.pop() != 0);';
+            $$ = 'stack.pop().compare(0) !== 0;';
         %}
     | OP_RETURN
         %{
