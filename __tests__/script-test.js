@@ -16,6 +16,28 @@ describe('valid', function() {
     });
 });
 
+describe('control flow', function() {
+    it('adds the body if condition passes', function() {
+        var script = 'OP_0 OP_1 OP_IF OP_1ADD OP_ENDIF OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('does not add body if condition fails', function() {
+        var script = 'OP_0 OP_0 OP_IF OP_1ADD OP_ENDIF OP_VERIFY';
+        expect(exec(script)).toBe(false);
+    });
+
+    it('allows multiple commands in if statement', function() {
+        var script = 'OP_0 OP_1 OP_IF OP_1ADD OP_1ADD OP_ENDIF OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('allows else statements', function() {
+        var script = 'OP_0 OP_0 OP_IF OP_NOP OP_ELSE OP_1ADD OP_ENDIF OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+});
+
 describe('stack', function() {
     it('correctly duplicates', function() {
         var script = 'OP_1 OP_DUP OP_EQUAL OP_VERIFY';

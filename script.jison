@@ -52,7 +52,6 @@
 
 %%
 \s+                       { /* skip whitespace */ }
-"OP_NOP"                  { /* skip no-ops */ }
 0x([0-9]|[A-F]|[a-f])+\b  { return 'DATA'; }
 /* Constants */
 "OP_0"                    { return 'OP_0'; }
@@ -60,6 +59,10 @@
 "OP_1"                    { return 'OP_1'; }
 "OP_TRUE"                 { return 'OP_1'; }
 /* Flow control */
+"OP_NOP"                  { return 'OP_NOP'; }
+"OP_IF"                   { return 'OP_IF'; }
+"OP_ELSE"                 { return 'OP_ELSE'; }
+"OP_ENDIF"                { return 'OP_ENDIF'; }
 "OP_VERIFY"               { return 'OP_VERIFY'; }
 "OP_RETURN"               { return 'OP_RETURN'; }
 /* Stack */
@@ -83,92 +86,117 @@
 
 /lex
 
-%right OP_EQUAL
+%nonassoc OP_ELSE
+%nonassoc OP_ENDIF
 
 %start expressions
 
 %% /* language grammar */
 
 expressions
-    : e EOF
+    : nonterminal expressions
+    | terminal EOF
         %{
             debug && console.log("------------------");
-            var js = beautify('var stack = new ScriptStack();' + $e);
-            return eval(js);
+            var js = beautify($1);
+            return eval('var stack = new ScriptStack();' + js);
         %}
     ;
 
-e
-    : DATA e
+terminal
+    : OP_VERIFY
         %{
-            $$ = 'stack.push(' + $1 + ');' + $e;
-        %}
-    | OP_0 e
-        %{
-            $$ = 'stack.push(0);' + $e;
-        %}
-    | OP_1 e
-        %{
-            $$ = 'stack.push(1);' + $e;
-        %}
-    | OP_VERIFY
-        %{
-            $$ = 'stack.pop().compare(0) !== 0;';
+            $$ = ($0 || '') + 'stack.pop().compare(0) !== 0;';
         %}
     | OP_RETURN
         %{
-            $$ = 'false;';
+            $$ = ($0 || '') + 'false;';
         %}
-    | OP_DROP e
+    ;
+
+statement
+    : nonterminal
+    | nonterminal statement
+    ;
+
+nonterminal
+    : DATA
         %{
-            $$ = 'stack.pop();' + $e;
+            $$ = ($0 || '') + 'stack.push(' + $1 + ');';
         %}
-    | OP_DUP e
+    | OP_IF statement OP_ELSE statement OP_ENDIF
         %{
-            $$ = 'var data = stack.pop(); stack.push(data); stack.push(data);' + $e;
+            var b1 = $statement1.substr('OP_IF'.length);
+            var b2 = $statement2.substr('OP_ELSE'.length);
+            $$ = ($0 || '') + 'if (stack.pop().compare(0) !== 0) {' + b1 + '} else {' + b2 + '};';
         %}
-    | OP_SWAP e
+    | OP_IF statement OP_ENDIF
         %{
-            $$ = 'var u = stack.pop(); var v = stack.pop(); stack.push(u); stack.push(v);' + $e;
+            var b1 = $statement.substr('OP_IF'.length);
+            $$ = ($0 || '') + 'if (stack.pop().compare(0) !== 0) {' + b1 + '};';
         %}
-    | OP_EQUAL e
+    | OP_NOP
         %{
-            $$ = 'if (stack.pop().equals(stack.pop())) { stack.push(1); } else { stack.push(0); }; ' + $e;
+            $$ = ($0 || '');
         %}
-    | OP_1ADD e
+    | OP_0
         %{
-            $$ = 'stack.push(stack.pop().add(1));' + $e;
+            $$ = ($0 || '') + 'stack.push(0);';
         %}
-    | OP_1SUB e
+    | OP_1
         %{
-            $$ = 'stack.push(stack.pop().minus(1));' + $e;
+            $$ = ($0 || '') + 'stack.push(1);';
         %}
-    | OP_NEGATE e
+    | OP_DROP
         %{
-            $$ = 'stack.push(stack.pop().multiply(-1));' + $e;
+            $$ = ($0 || '') + 'stack.pop();';
         %}
-    | OP_ABS e
+    | OP_DUP
         %{
-            $$ = 'stack.push(stack.pop().abs());' + $e;
+            $$ = ($0 || '') + 'var data = stack.pop(); stack.push(data); stack.push(data);';
         %}
-    | OP_RIPEMD160 e
+    | OP_SWAP
         %{
-            $$ = 'stack.push(ripemd160(stack.pop()));' + $e;
+            $$ = ($0 || '') + 'var u = stack.pop(); var v = stack.pop(); stack.push(u); stack.push(v);';
         %}
-    | OP_SHA1 e
+    | OP_EQUAL
         %{
-            $$ = 'stack.push(sha1(stack.pop()));' + $e;
+            $$ = ($0 || '') + 'if (stack.pop().equals(stack.pop())) { stack.push(1); } else { stack.push(0); }; ';
         %}
-    | OP_SHA256 e
+    | OP_1ADD
         %{
-            $$ = 'stack.push(sha256(stack.pop()));' + $e;
+            $$ = ($0 || '') + 'stack.push(stack.pop().add(1));';
         %}
-    | OP_HASH160 e
+    | OP_1SUB
         %{
-            $$ = 'stack.push(ripemd160(sha256(stack.pop())));' + $e;
+            $$ = ($0 || '') + 'stack.push(stack.pop().minus(1));';
         %}
-    | OP_HASH256 e
+    | OP_NEGATE
         %{
-            $$ = 'stack.push(sha256(sha256(stack.pop())));' + $e;
+            $$ = ($0 || '') + 'stack.push(stack.pop().multiply(-1));';
+        %}
+    | OP_ABS
+        %{
+            $$ = ($0 || '') + 'stack.push(stack.pop().abs());';
+        %}
+    | OP_RIPEMD160
+        %{
+            $$ = ($0 || '') + 'stack.push(ripemd160(stack.pop()));';
+        %}
+    | OP_SHA1
+        %{
+            $$ = ($0 || '') + 'stack.push(sha1(stack.pop()));';
+        %}
+    | OP_SHA256
+        %{
+            $$ = ($0 || '') + 'stack.push(sha256(stack.pop()));';
+        %}
+    | OP_HASH160
+        %{
+            $$ = ($0 || '') + 'stack.push(ripemd160(sha256(stack.pop())));';
+        %}
+    | OP_HASH256
+        %{
+            $$ = ($0 || '') + 'stack.push(sha256(sha256(stack.pop())));';
         %}
     ;
