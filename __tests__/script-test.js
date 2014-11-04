@@ -6,6 +6,19 @@ function exec(input) {
     return parser.parse(input);
 }
 
+describe('constants', function() {
+    it('pushes 2-16 for OP_[2-16]', function() {
+        for (var i = 2; i < 16; i++) {
+            var script = 'OP_' + i;
+            for (var j = 0; j < i; j++) {
+                script += ' OP_1SUB';
+            }
+            script += ' OP_VERIFY';
+            expect(exec(script)).toBe(false);
+        }
+    });
+});
+
 describe('valid', function() {
     it('returns true for a valid stack', function() {
         expect(exec('OP_1 OP_VERIFY')).toBe(true);

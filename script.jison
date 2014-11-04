@@ -58,6 +58,7 @@
 "OP_1NEGATE"              { return 'OP_1NEGATE'; }
 "OP_1"                    { return 'OP_1'; }
 "OP_TRUE"                 { return 'OP_1'; }
+OP_([2-9]|1[0-6])         { return 'OP_DATA'; }
 /* Flow control */
 "OP_NOP"                  { return 'OP_NOP'; }
 "OP_IF"                   { return 'OP_IF'; }
@@ -162,6 +163,11 @@ nonterminal
     | OP_1NEGATE
         %{
             $$ = ($0 || '') + 'stack.push(-1);';
+        %}
+    | OP_DATA
+        %{
+            var value = $1.substr('OP_'.length);
+            $$ = ($0 || '') + 'stack.push(' + value + ');';
         %}
     | OP_DROP
         %{
