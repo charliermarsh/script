@@ -1,10 +1,6 @@
 jest.autoMockOff();
 
-var parser = require('../script.js').parser;
-
-function exec(input) {
-    return parser.parse(input);
-}
+var exec = require('../index.js');
 
 describe('constants', function() {
     it('pushes 2-16 for OP_[2-16]', function() {

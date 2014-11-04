@@ -2,6 +2,7 @@
   "name": "Script.js",
   "description": "Compile Bitcoin Script to JavaScript.",
   "scripts": {
+    "build": "./node_modules/.bin/browserify index.js -o bundle.js",
     "test": "jest"
   },
   "dependencies": {
@@ -12,6 +13,7 @@
     "sha256": "^0.1.1"
   },
   "devDependencies": {
+    "browserify": "^6.2.0",
     "jest-cli": "^0.1.18",
     "jison": "^0.4.15"
   },
