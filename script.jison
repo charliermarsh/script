@@ -77,8 +77,15 @@ OP_([2-9]|1[0-6])         { return 'OP_DATA'; }
 "OP_VERIFY"               { return 'OP_VERIFY'; }
 "OP_RETURN"               { return 'OP_RETURN'; }
 /* Stack */
+"OP_IFDUP"                { return 'OP_IFDUP'; }
+"OP_DEPTH"                { return 'OP_DEPTH'; }
 "OP_DROP"                 { return 'OP_DROP'; }
 "OP_DUP"                  { return 'OP_DUP'; }
+"OP_NIP"                  { return 'OP_NIP'; }
+"OP_OVER"                 { return 'OP_OVER'; }
+"OP_PICK"                 { return 'OP_PICK'; }
+"OP_ROLL"                 { return 'OP_ROLL'; }
+"OP_ROT"                  { return 'OP_ROT'; }
 "OP_SWAP"                 { return 'OP_SWAP'; }
 /* Bitwise logic */
 "OP_EQUAL"                { return 'OP_EQUAL'; }
@@ -185,6 +192,14 @@ nonterminal
             var value = $1.substr('OP_'.length);
             $$ = ($0 || '') + 'stack.push(' + value + ');';
         %}
+    | OP_IFDUP
+        %{
+            $$ = ($0 || '') + 'var top = stack.pop(); if (top.compare(0) === 0) { stack.push(top); } else { stack.push(top); stack.push(top); }';
+        %}
+    | OP_DEPTH
+        %{
+            $$ = ($0 || '') + 'stack.push(stack.length);';
+        %}
     | OP_DROP
         %{
             $$ = ($0 || '') + 'stack.pop();';
@@ -192,6 +207,26 @@ nonterminal
     | OP_DUP
         %{
             $$ = ($0 || '') + 'var data = stack.pop(); stack.push(data); stack.push(data);';
+        %}
+    | OP_NIP
+        %{
+            $$ = ($0 || '') + 'var data = stack.pop(); stack.pop(); stack.push(data);';
+        %}
+    | OP_OVER
+        %{
+            $$ = ($0 || '') + 'var top = stack.pop(); var bottom = stack.pop(); stack.push(bottom); stack.push(top); stack.push(bottom);';
+        %}
+    | OP_PICK
+        %{
+            $$ = ($0 || '') + 'var n = stack.pop(); var temp = []; for (var i = 0; i < n - 1; i++) { temp.push(stack.pop()); } var nth = stack.pop(); stack.push(nth); for (var i = 0; i < n - 1; i++) { stack.push(temp[i]); } stack.push(nth);'
+        %}
+    | OP_ROLL
+        %{
+            $$ = ($0 || '') + 'var n = stack.pop(); var temp = []; for (var i = 0; i < n - 1; i++) { temp.push(stack.pop()); } var nth = stack.pop(); for (var i = 0; i < n - 1; i++) { stack.push(temp[i]); } stack.push(nth);'
+        %}
+    | OP_ROT
+        %{
+            $$ = ($0 || '') + 'var first = stack.pop(); var second = stack.pop(); var third = stack.pop(); stack.push(second); stack.push(first); stack.push(third);'
         %}
     | OP_SWAP
         %{

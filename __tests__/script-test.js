@@ -53,13 +53,48 @@ describe('control flow', function() {
 });
 
 describe('stack', function() {
+    it('correctly ifdups', function() {
+        var script = 'OP_0 OP_1 OP_IFDUP OP_DROP OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    })
+
+    it('correctly computes depth', function() {
+        var script = 'OP_0 OP_0 OP_DEPTH OP_1SUB OP_1SUB OP_VERIFY';
+        expect(exec(script)).toBe(false);
+    });
+
+    it('correctly drops', function() {
+        var script = 'OP_1 OP_0 OP_DROP OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
     it('correctly duplicates', function() {
         var script = 'OP_1 OP_DUP OP_EQUAL OP_VERIFY';
         expect(exec(script)).toBe(true);
     });
 
-    it('correctly drops', function() {
-        var script = 'OP_1 OP_0 OP_DROP OP_VERIFY';
+    it('correctly drops second element', function() {
+        var script = 'OP_0 OP_1 OP_0 OP_NIP OP_DROP OP_VERIFY';
+        expect(exec(script)).toBe(false);
+    });
+
+    it('correctly copies over', function() {
+        var script = 'OP_0 OP_1 OP_0 OP_OVER OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly picks', function() {
+        var script = 'OP_1 OP_0 OP_0 OP_0 OP_0 OP_1ADD OP_1ADD OP_1ADD OP_1ADD OP_PICK OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly rolls', function() {
+        var script = 'OP_1 OP_0 OP_0 OP_0 OP_0 OP_1ADD OP_1ADD OP_1ADD OP_1ADD OP_ROLL OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly rotates', function() {
+        var script = 'OP_1 OP_0 OP_0 OP_ROT OP_VERIFY';
         expect(exec(script)).toBe(true);
     });
 
