@@ -4,32 +4,36 @@
     var base = 16;
     var debug = false;
 
-    // Crypto
-    var ripemd160 = function(data) {
-        data = data.toString(base);
-        return require('ripemd160')(data).toString('hex');
-    };
-    var sha1 = function(data) {
-        data = data.toString(base);
-        return require('sha1')(data);
-    };
-    var sha256 = function(data) {
-        data = data.toString(base);
-        return require('sha256')(data);
-    };
-
-    // Other utilities
+    // Utilities required in Jison compiler
     var bigInt = require('big-integer');
     var beautify = require('js-beautify').js_beautify;
-    var serialize = function(data) {
-        return data.toString(base);
-    };
-    var deserialize = function(data) {
-        return bigInt(data, base);
+
+    // Utilities required in compiled code
+    var util = {
+        // Crypto
+        ripemd160: function(data) {
+            data = data.toString(base);
+            return require('ripemd160')(data).toString('hex');
+        },
+        sha1: function(data) {
+            data = data.toString(base);
+            return require('sha1')(data);
+        },
+        sha256: function(data) {
+            data = data.toString(base);
+            return require('sha256')(data);
+        },
     };
 
     // Setup
     var ScriptStack = function() {
+        var serialize = function(data) {
+            return data.toString(base);
+        };
+        var deserialize = function(data) {
+            return bigInt(data, base);
+        };
+
         this.push = function() {
             debug && console.log("Pre-push:", this);
             var serialized = [].map.call(arguments, serialize);
@@ -101,18 +105,19 @@ expressions
         %{
             debug && console.log("------------------");
             var js = beautify($1);
-            return eval('var stack = new ScriptStack();' + js);
+            var evaluate = new Function('stack', 'util', js);
+            return evaluate(new ScriptStack(), util);
         %}
     ;
 
 terminal
     : OP_VERIFY
         %{
-            $$ = ($0 || '') + 'stack.pop().compare(0) !== 0;';
+            $$ = ($0 || '') + 'return (stack.pop().compare(0) !== 0);';
         %}
     | OP_RETURN
         %{
-            $$ = ($0 || '') + 'false;';
+            $$ = ($0 || '') + 'return false;';
         %}
     ;
 
@@ -203,22 +208,22 @@ nonterminal
         %}
     | OP_RIPEMD160
         %{
-            $$ = ($0 || '') + 'stack.push(ripemd160(stack.pop()));';
+            $$ = ($0 || '') + 'stack.push(util.ripemd160(stack.pop()));';
         %}
     | OP_SHA1
         %{
-            $$ = ($0 || '') + 'stack.push(sha1(stack.pop()));';
+            $$ = ($0 || '') + 'stack.push(util.sha1(stack.pop()));';
         %}
     | OP_SHA256
         %{
-            $$ = ($0 || '') + 'stack.push(sha256(stack.pop()));';
+            $$ = ($0 || '') + 'stack.push(util.sha256(stack.pop()));';
         %}
     | OP_HASH160
         %{
-            $$ = ($0 || '') + 'stack.push(ripemd160(sha256(stack.pop())));';
+            $$ = ($0 || '') + 'stack.push(util.ripemd160(util.sha256(stack.pop())));';
         %}
     | OP_HASH256
         %{
-            $$ = ($0 || '') + 'stack.push(sha256(sha256(stack.pop())));';
+            $$ = ($0 || '') + 'stack.push(util.sha256(util.sha256(stack.pop())));';
         %}
     ;
