@@ -55,6 +55,7 @@
 /* Constants */
 "OP_0"                    { return 'OP_0'; }
 "OP_FALSE"                { return 'OP_0'; }
+"OP_1NEGATE"              { return 'OP_1NEGATE'; }
 "OP_1"                    { return 'OP_1'; }
 "OP_TRUE"                 { return 'OP_1'; }
 /* Flow control */
@@ -157,6 +158,10 @@ nonterminal
     | OP_1
         %{
             $$ = ($0 || '') + 'stack.push(1);';
+        %}
+    | OP_1NEGATE
+        %{
+            $$ = ($0 || '') + 'stack.push(-1);';
         %}
     | OP_DROP
         %{
