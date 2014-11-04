@@ -1,4 +1,4 @@
-/* description: Parses end executes mathematical expressions. */
+/* description: Compiles Bitcoin Script to JavaScript. */
 
 %{
     var base = 16;
