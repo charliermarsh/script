@@ -44,7 +44,6 @@
             return result;
         };
     };
-    ScriptStack.prototype = [];
 %}
 
 /* lexical grammar */
