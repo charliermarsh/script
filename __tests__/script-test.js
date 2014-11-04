@@ -32,6 +32,11 @@ describe('control flow', function() {
         expect(exec(script)).toBe(true);
     });
 
+    it('allows not-if statements', function() {
+        var script = 'OP_0 OP_0 OP_NOTIF OP_1ADD OP_ENDIF OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
     it('allows else statements', function() {
         var script = 'OP_0 OP_0 OP_IF OP_NOP OP_ELSE OP_1ADD OP_ENDIF OP_VERIFY';
         expect(exec(script)).toBe(true);

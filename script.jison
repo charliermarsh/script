@@ -61,6 +61,7 @@
 /* Flow control */
 "OP_NOP"                  { return 'OP_NOP'; }
 "OP_IF"                   { return 'OP_IF'; }
+"OP_NOTIF"                { return 'OP_NOTIF'; }
 "OP_ELSE"                 { return 'OP_ELSE'; }
 "OP_ENDIF"                { return 'OP_ENDIF'; }
 "OP_VERIFY"               { return 'OP_VERIFY'; }
@@ -134,6 +135,17 @@ nonterminal
         %{
             var b1 = $statement.substr('OP_IF'.length);
             $$ = ($0 || '') + 'if (stack.pop().compare(0) !== 0) {' + b1 + '};';
+        %}
+    | OP_NOTIF statement OP_ELSE statement OP_ENDIF
+        %{
+            var b1 = $statement1.substr('OP_NOTIF'.length);
+            var b2 = $statement2.substr('OP_ELSE'.length);
+            $$ = ($0 || '') + 'if (stack.pop().compare(0) === 0) {' + b1 + '} else {' + b2 + '};';
+        %}
+    | OP_NOTIF statement OP_ENDIF
+        %{
+            var b1 = $statement.substr('OP_NOTIF'.length);
+            $$ = ($0 || '') + 'if (stack.pop().compare(0) === 0) {' + b1 + '};';
         %}
     | OP_NOP
         %{
