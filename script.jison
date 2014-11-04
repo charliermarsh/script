@@ -6,6 +6,7 @@
     // Utilities required in Jison compiler
     var bigInt = require('big-integer');
     var beautify = require('js-beautify').js_beautify;
+    var O = require('observed');
 
     // Utilities required in compiled code
     var util = {
@@ -33,13 +34,22 @@
             return bigInt(data, base);
         };
 
+        // We store the history of pushes and pops, for later inspection
+        // Pops are represented by pushing `null`
+        var self = this;
+        self.history = [];
+
         this.push = function() {
             var serialized = [].map.call(arguments, serialize);
             var result = Array.prototype.push.apply(this, serialized);
+            serialized.forEach(function(value) {
+                self.history.push(value);
+            });
             return result;
         };
         this.pop = function() {
             var result = deserialize(Array.prototype.pop.apply(this));
+            self.history.push(null);
             return result;
         };
     };
@@ -100,7 +110,14 @@ expressions
         %{
             var js = beautify($1);
             var evaluate = new Function('stack', 'util', js);
-            return evaluate(new ScriptStack(), util);
+
+            var stack = new ScriptStack();
+            return {
+                evaluate: function() {
+                    return evaluate(stack, util);
+                },
+                stack: stack
+            };
         %}
     ;
 
