@@ -2,7 +2,6 @@
 
 %{
     var base = 16;
-    var debug = false;
 
     // Utilities required in Jison compiler
     var bigInt = require('big-integer');
@@ -35,16 +34,12 @@
         };
 
         this.push = function() {
-            debug && console.log("Pre-push:", this);
             var serialized = [].map.call(arguments, serialize);
             var result = Array.prototype.push.apply(this, serialized);
-            debug && console.log("Post-push:", this);
             return result;
         };
         this.pop = function() {
-            debug && console.log("Pre-pop:", this);
             var result = deserialize(Array.prototype.pop.apply(this));
-            debug && console.log("Post-pop:", this);
             return result;
         };
     };
@@ -103,7 +98,6 @@ expressions
     : nonterminal expressions
     | terminal EOF
         %{
-            debug && console.log("------------------");
             var js = beautify($1);
             var evaluate = new Function('stack', 'util', js);
             return evaluate(new ScriptStack(), util);
