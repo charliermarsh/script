@@ -34,23 +34,131 @@
             return bigInt(data, base);
         };
 
-        // We store the history of pushes and pops, for later inspection
-        // Pops are represented by pushing `null`
-        var self = this;
-        self.history = [];
-
         this.push = function() {
             var serialized = [].map.call(arguments, serialize);
-            var result = Array.prototype.push.apply(this, serialized);
-            serialized.forEach(function(value) {
-                self.history.push(value);
-            });
-            return result;
+            return Array.prototype.push.apply(this, serialized);
         };
+
         this.pop = function() {
-            var result = deserialize(Array.prototype.pop.apply(this));
-            self.history.push(null);
-            return result;
+            return deserialize(Array.prototype.pop.apply(this));
+        };
+
+        this.peek = function() {
+            var value = this.pop();
+            this.push(value);
+            return value;
+        };
+
+        // Stack operations
+        this.OP_IFDUP = function() {
+            var top = this.peek();
+            if (top.compare(0) !== 0) {
+                this.push(top);
+            }
+        };
+        this.OP_DEPTH = function() {
+            this.push(this.length);
+        };
+        this.OP_DROP = this.pop;
+        this.OP_2DROP = function() {
+            this.OP_DROP();
+            this.OP_DROP();
+        };
+        this.OP_DUP = function(n) {
+            n = n || 1;
+
+            // Extract top `n` values
+            var values = [];
+            for (var i = 0; i < n; i++) {
+                values.push(this.pop());
+            }
+            values.reverse();
+
+            for (var i = 0; i < 2 * n; i++) {
+                this.push(values[i % values.length]);
+            }
+        };
+        this.OP_2DUP = function() {
+            this.OP_DUP(2);
+        };
+        this.OP_3DUP = function() {
+            this.OP_DUP(3);
+        };
+        this.OP_NIP = function() {
+            var top = this.pop();
+            this.pop();
+            this.push(top);
+        };
+        this.OP_OVER = function() {
+            var top = this.pop();
+            var bottom = this.peek();
+            this.push(top);
+            this.push(bottom);
+        };
+        this.OP_PICK = function() {
+            var n = this.pop();
+            var temp = [];
+            for (var i = 0; i < n - 1; i++) {
+                temp.push(this.pop());
+            }
+            var nth = this.peek();
+            for (var i = 0; i < n - 1; i++) {
+                this.push(temp[i]);
+            }
+            this.push(nth);
+        };
+        this.OP_ROLL = function() {
+            var n = this.pop();
+            var temp = [];
+            for (var i = 0; i < n - 1; i++) {
+                temp.push(this.pop());
+            }
+            var nth = this.pop();
+            for (var i = 0; i < n - 1; i++) {
+                this.push(temp[i]);
+            }
+            this.push(nth);
+        };
+        this.OP_ROT = function() {
+            var values = [this.pop(), this.pop(), this.pop()];
+            values.reverse();
+            for (var i = 0; i < values.length; i++) {
+                this.push(values[(i + 1) % values.length]);
+            }
+        };
+        this.OP_SWAP = function() {
+            var values = [this.pop(), this.pop()];
+            for (var i = 0; i < values.length; i++) {
+                this.push(values[i]);
+            }
+        };
+        this.OP_TUCK = function() {
+            var values = [this.pop(), this.pop()];
+            values.reverse();
+            for (var i = 0; i < values.length + 1; i++) {
+                this.push(values[i % values.length]);
+            }
+        };
+        this.OP_2OVER = function() {
+            var values = [this.pop(), this.pop(), this.pop(), this.pop()];
+            values.reverse();
+            for (var i = 0; i < values.length + 2; i++) {
+                this.push(values[i % values.length]);
+            }
+        };
+        this.OP_2ROT = function() {
+            var values = [this.pop(), this.pop(), this.pop(), this.pop(), this.pop(), this.pop()];
+            values.reverse();
+            for (var i = 0; i < values.length; i++) {
+                this.push(values[(i + 2) % values.length]);
+            }
+        };
+        this.OP_2SWAP = function() {
+            var values = [this.pop(), this.pop(), this.pop(), this.pop()];
+            values.reverse();
+            for (var i = 0; i < values.length; i++) {
+                this.push(values[(i + 2) % values.length]);
+            }
         };
     };
 %}
@@ -77,23 +185,23 @@ OP_([2-9]|1[0-6])\b       { return 'OP_DATA'; }
 "OP_VERIFY"               { return 'OP_VERIFY'; }
 "OP_RETURN"               { return 'OP_RETURN'; }
 /* Stack */
-"OP_IFDUP"                { return 'OP_IFDUP'; }
-"OP_DEPTH"                { return 'OP_DEPTH'; }
-"OP_DROP"                 { return 'OP_DROP'; }
-"OP_DUP"                  { return 'OP_DUP'; }
-"OP_NIP"                  { return 'OP_NIP'; }
-"OP_OVER"                 { return 'OP_OVER'; }
-"OP_PICK"                 { return 'OP_PICK'; }
-"OP_ROLL"                 { return 'OP_ROLL'; }
-"OP_ROT"                  { return 'OP_ROT'; }
-"OP_SWAP"                 { return 'OP_SWAP'; }
-"OP_TUCK"                 { return 'OP_TUCK'; }
-"OP_2DROP"                { return 'OP_2DROP'; }
-"OP_2DUP"                 { return 'OP_2DUP'; }
-"OP_3DUP"                 { return 'OP_3DUP'; }
-"OP_2OVER"                { return 'OP_2OVER'; }
-"OP_2ROT"                 { return 'OP_2ROT'; }
-"OP_2SWAP"                { return 'OP_2SWAP'; }
+"OP_IFDUP"                { return 'OP_FUNCTION'; }
+"OP_DEPTH"                { return 'OP_FUNCTION'; }
+"OP_DROP"                 { return 'OP_FUNCTION'; }
+"OP_DUP"                  { return 'OP_FUNCTION'; }
+"OP_NIP"                  { return 'OP_FUNCTION'; }
+"OP_OVER"                 { return 'OP_FUNCTION'; }
+"OP_PICK"                 { return 'OP_FUNCTION'; }
+"OP_ROLL"                 { return 'OP_FUNCTION'; }
+"OP_ROT"                  { return 'OP_FUNCTION'; }
+"OP_SWAP"                 { return 'OP_FUNCTION'; }
+"OP_TUCK"                 { return 'OP_FUNCTION'; }
+"OP_2DROP"                { return 'OP_FUNCTION'; }
+"OP_2DUP"                 { return 'OP_FUNCTION'; }
+"OP_3DUP"                 { return 'OP_FUNCTION'; }
+"OP_2OVER"                { return 'OP_FUNCTION'; }
+"OP_2ROT"                 { return 'OP_FUNCTION'; }
+"OP_2SWAP"                { return 'OP_FUNCTION'; }
 /* Bitwise logic */
 "OP_EQUAL"                { return 'OP_EQUAL'; }
 /* Arithmetic */
@@ -199,73 +307,9 @@ nonterminal
             var value = $1.substr('OP_'.length);
             $$ = ($0 || '') + 'stack.push(' + value + ');';
         %}
-    | OP_IFDUP
+    | OP_FUNCTION
         %{
-            $$ = ($0 || '') + 'var top = stack.pop(); if (top.compare(0) === 0) { stack.push(top); } else { stack.push(top); stack.push(top); }';
-        %}
-    | OP_DEPTH
-        %{
-            $$ = ($0 || '') + 'stack.push(stack.length);';
-        %}
-    | OP_DROP
-        %{
-            $$ = ($0 || '') + 'stack.pop();';
-        %}
-    | OP_DUP
-        %{
-            $$ = ($0 || '') + 'var data = stack.pop(); stack.push(data); stack.push(data);';
-        %}
-    | OP_NIP
-        %{
-            $$ = ($0 || '') + 'var data = stack.pop(); stack.pop(); stack.push(data);';
-        %}
-    | OP_OVER
-        %{
-            $$ = ($0 || '') + 'var top = stack.pop(); var bottom = stack.pop(); stack.push(bottom); stack.push(top); stack.push(bottom);';
-        %}
-    | OP_PICK
-        %{
-            $$ = ($0 || '') + 'var n = stack.pop(); var temp = []; for (var i = 0; i < n - 1; i++) { temp.push(stack.pop()); } var nth = stack.pop(); stack.push(nth); for (var i = 0; i < n - 1; i++) { stack.push(temp[i]); } stack.push(nth);'
-        %}
-    | OP_ROLL
-        %{
-            $$ = ($0 || '') + 'var n = stack.pop(); var temp = []; for (var i = 0; i < n - 1; i++) { temp.push(stack.pop()); } var nth = stack.pop(); for (var i = 0; i < n - 1; i++) { stack.push(temp[i]); } stack.push(nth);'
-        %}
-    | OP_ROT
-        %{
-            $$ = ($0 || '') + 'var first = stack.pop(); var second = stack.pop(); var third = stack.pop(); stack.push(second); stack.push(first); stack.push(third);'
-        %}
-    | OP_SWAP
-        %{
-            $$ = ($0 || '') + 'var u = stack.pop(); var v = stack.pop(); stack.push(u); stack.push(v);';
-        %}
-    | OP_TUCK
-        %{
-            $$ = ($0 || '') + 'var top = stack.pop(); var bottom = stack.pop(); stack.push(top); stack.push(bottom); stack.push(top);'
-        %}
-    | OP_2DROP
-        %{
-            $$ = ($0 || '') + 'stack.pop(); stack.pop();'
-        %}
-    | OP_2DUP
-        %{
-            $$ = ($0 || '') + 'var top = stack.pop(); var bottom = stack.pop(); for (var i = 0; i < 2; i++) { stack.push(bottom); stack.push(top); }'
-        %}
-    | OP_3DUP
-        %{
-            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 6; i++) { stack.push(values[i % values.length]); }'
-        %}
-    | OP_2OVER
-        %{
-            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 6; i++) { stack.push(values[i % values.length]); }'
-        %}
-    | OP_2ROT
-        %{
-            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 6; i++) { stack.push(values[(i + 2) % values.length]); }'
-        %}
-    | OP_2SWAP
-        %{
-            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 4; i++) { stack.push(values[(i + 2) % values.length]); }'
+            $$ = ($0 || '') + 'stack.' + $1  + '();'
         %}
     | OP_EQUAL
         %{
