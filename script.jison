@@ -67,7 +67,7 @@
 "OP_1NEGATE"              { return 'OP_1NEGATE'; }
 "OP_1"                    { return 'OP_1'; }
 "OP_TRUE"                 { return 'OP_1'; }
-OP_([2-9]|1[0-6])         { return 'OP_DATA'; }
+OP_([2-9]|1[0-6])\b       { return 'OP_DATA'; }
 /* Flow control */
 "OP_NOP"                  { return 'OP_NOP'; }
 "OP_IF"                   { return 'OP_IF'; }
@@ -87,6 +87,13 @@ OP_([2-9]|1[0-6])         { return 'OP_DATA'; }
 "OP_ROLL"                 { return 'OP_ROLL'; }
 "OP_ROT"                  { return 'OP_ROT'; }
 "OP_SWAP"                 { return 'OP_SWAP'; }
+"OP_TUCK"                 { return 'OP_TUCK'; }
+"OP_2DROP"                { return 'OP_2DROP'; }
+"OP_2DUP"                 { return 'OP_2DUP'; }
+"OP_3DUP"                 { return 'OP_3DUP'; }
+"OP_2OVER"                { return 'OP_2OVER'; }
+"OP_2ROT"                 { return 'OP_2ROT'; }
+"OP_2SWAP"                { return 'OP_2SWAP'; }
 /* Bitwise logic */
 "OP_EQUAL"                { return 'OP_EQUAL'; }
 /* Arithmetic */
@@ -231,6 +238,34 @@ nonterminal
     | OP_SWAP
         %{
             $$ = ($0 || '') + 'var u = stack.pop(); var v = stack.pop(); stack.push(u); stack.push(v);';
+        %}
+    | OP_TUCK
+        %{
+            $$ = ($0 || '') + 'var top = stack.pop(); var bottom = stack.pop(); stack.push(top); stack.push(bottom); stack.push(top);'
+        %}
+    | OP_2DROP
+        %{
+            $$ = ($0 || '') + 'stack.pop(); stack.pop();'
+        %}
+    | OP_2DUP
+        %{
+            $$ = ($0 || '') + 'var top = stack.pop(); var bottom = stack.pop(); for (var i = 0; i < 2; i++) { stack.push(bottom); stack.push(top); }'
+        %}
+    | OP_3DUP
+        %{
+            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 6; i++) { stack.push(values[i % values.length]); }'
+        %}
+    | OP_2OVER
+        %{
+            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 6; i++) { stack.push(values[i % values.length]); }'
+        %}
+    | OP_2ROT
+        %{
+            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 6; i++) { stack.push(values[(i + 2) % values.length]); }'
+        %}
+    | OP_2SWAP
+        %{
+            $$ = ($0 || '') + 'var values = [stack.pop(), stack.pop(), stack.pop(), stack.pop()]; values.reverse(); for (var i = 0; i < 4; i++) { stack.push(values[(i + 2) % values.length]); }'
         %}
     | OP_EQUAL
         %{

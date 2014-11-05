@@ -102,6 +102,26 @@ describe('stack', function() {
         var script = 'OP_1 OP_0 OP_SWAP OP_VERIFY';
         expect(exec(script)).toBe(true);
     });
+
+    it('correctly duplicates three times', function() {
+        var script = 'OP_1 OP_0 OP_0 OP_3DUP OP_2DROP OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly computes over twice', function() {
+        var script = 'OP_0 OP_1 OP_0 OP_0 OP_2OVER OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly rotates twice', function() {
+        var script = 'OP_1 OP_0 OP_1 OP_1 OP_1 OP_1 OP_2ROT OP_VERIFY';
+        expect(exec(script)).toBe(false);
+    });
+
+    it('correctly swaps the top pair', function() {
+        var script = 'OP_1 OP_0 OP_0 OP_0 OP_2SWAP OP_DROP OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
 });
 
 describe('arithmetic', function() {
