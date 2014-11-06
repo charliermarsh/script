@@ -34,6 +34,20 @@
             return bigInt(data, base);
         };
 
+        // Constants
+        this.OP_0 = function() {
+            this.push(0);
+        };
+        this.OP_FALSE = this.OP_0;
+        this.OP_1NEGATE = function() {
+            this.OP_1();
+            this.OP_NEGATE();
+        };
+        this.OP_1 = function() {
+            this.push(1);
+        };
+        this.OP_TRUE = this.OP_1;
+
         // Basic array operations
         this.push = function() {
             var serialized = [].map.call(arguments, serialize);
@@ -329,11 +343,11 @@
 \s+                       { /* skip whitespace */ }
 0x([0-9]|[A-F]|[a-f])+\b  { return 'DATA'; }
 /* Constants */
-"OP_0"                    { return 'OP_0'; }
-"OP_FALSE"                { return 'OP_0'; }
-"OP_1NEGATE"              { return 'OP_1NEGATE'; }
-"OP_1"                    { return 'OP_1'; }
-"OP_TRUE"                 { return 'OP_1'; }
+"OP_0"                    { return 'OP_FUNCTION'; }
+"OP_FALSE"                { return 'OP_FUNCTION'; }
+"OP_1NEGATE"              { return 'OP_FUNCTION'; }
+"OP_1"                    { return 'OP_FUNCTION'; }
+"OP_TRUE"                 { return 'OP_FUNCTION'; }
 OP_([2-9]|1[0-6])\b       { return 'DATA'; }
 /* Flow control */
 "OP_NOP"                  { return 'OP_NOP'; }
@@ -406,8 +420,7 @@ expressions
         %{
             var js = beautify($1);
             var evaluate = new Function('stack', js);
-            var stack = new ScriptStack();
-            return evaluate(stack);
+            return evaluate(new ScriptStack());
         %}
     ;
 
@@ -463,18 +476,6 @@ nonterminal
     | OP_NOP
         %{
             $$ = ($0 || '');
-        %}
-    | OP_0
-        %{
-            $$ = ($0 || '') + 'stack.push(0);';
-        %}
-    | OP_1
-        %{
-            $$ = ($0 || '') + 'stack.push(1);';
-        %}
-    | OP_1NEGATE
-        %{
-            $$ = ($0 || '') + 'stack.push(-1);';
         %}
     | OP_FUNCTION
         %{
