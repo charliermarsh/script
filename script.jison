@@ -334,7 +334,7 @@
 "OP_1NEGATE"              { return 'OP_1NEGATE'; }
 "OP_1"                    { return 'OP_1'; }
 "OP_TRUE"                 { return 'OP_1'; }
-OP_([2-9]|1[0-6])\b       { return 'OP_DATA'; }
+OP_([2-9]|1[0-6])\b       { return 'DATA'; }
 /* Flow control */
 "OP_NOP"                  { return 'OP_NOP'; }
 "OP_IF"                   { return 'OP_IF'; }
@@ -430,7 +430,13 @@ statement
 nonterminal
     : DATA
         %{
-            $$ = ($0 || '') + 'stack.push(' + $1 + ');';
+            var value;
+            if ($1.indexOf('OP_') !== -1) {
+                value = $1.substr('OP_'.length);
+            } else {
+                value = $1;
+            }
+            $$ = ($0 || '') + 'stack.push(' + value + ');';
         %}
     | OP_IF statement OP_ELSE statement OP_ENDIF
         %{
@@ -469,11 +475,6 @@ nonterminal
     | OP_1NEGATE
         %{
             $$ = ($0 || '') + 'stack.push(-1);';
-        %}
-    | OP_DATA
-        %{
-            var value = $1.substr('OP_'.length);
-            $$ = ($0 || '') + 'stack.push(' + value + ');';
         %}
     | OP_FUNCTION
         %{
