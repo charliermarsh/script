@@ -144,6 +144,36 @@ describe('arithmetic', function() {
         var script = 'OP_0 OP_1SUB OP_ABS OP_VERIFY';
         expect(exec(script)).toBe(true);
     });
+
+    it('correctly computes boolean operators', function() {
+        var script = 'OP_1 OP_1 OP_BOOLAND OP_VERIFY';
+        expect(exec(script)).toBe(true);
+
+        script = 'OP_0 OP_1 OP_BOOLAND OP_VERIFY';
+        expect(exec(script)).toBe(false);
+
+        script = 'OP_0 OP_1 OP_BOOLOR OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly computes comparison operators', function() {
+        var script = 'OP_0 OP_1 OP_LESSTHAN OP_VERIFY';
+        expect(exec(script)).toBe(true);
+
+        script = 'OP_0 OP_0 OP_LESSTHANOREQUAL OP_VERIFY';
+        expect(exec(script)).toBe(true);
+
+        script = 'OP_0 OP_0 OP_GREATERTHAN OP_VERIFY';
+        expect(exec(script)).toBe(false);
+
+        script = 'OP_0 OP_0 OP_GREATERTHANOREQUAL OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly computes the maximum', function() {
+        var script = 'OP_5 OP_12 OP_MAX OP_12 OP_EQUAL OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
 });
 
 describe('crypto', function() {

@@ -34,6 +34,7 @@
             return bigInt(data, base);
         };
 
+        // Basic array operations
         this.push = function() {
             var serialized = [].map.call(arguments, serialize);
             return Array.prototype.push.apply(this, serialized);
@@ -160,6 +161,147 @@
                 this.push(values[(i + 2) % values.length]);
             }
         };
+
+        // Bitwise logic
+        this.OP_EQUAL = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.equals(b)) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+
+        // Artithmetic operations
+        this.OP_1ADD = function() {
+            this.push(this.pop().add(1));
+        };
+        this.OP_1SUB = function() {
+            this.push(this.pop().minus(1));
+        };
+        this.OP_NEGATE = function() {
+            this.push(this.pop().multiply(-1));
+        };
+        this.OP_ABS = function() {
+            this.push(this.pop().abs());
+        };
+        this.OP_NOT = function() {
+            if (this.pop().equals(0)) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_0NOTEQUAL = function() {
+            if (this.pop().equals(0)) {
+                this.push(0);
+            } else {
+                this.push(1);
+            }
+        };
+        this.OP_ADD = function() {
+            var b = this.pop();
+            var a = this.pop();
+            this.push(a.add(b));
+        };
+        this.OP_SUB = function() {
+            var b = this.pop();
+            var a = this.pop();
+            this.push(a.minus(b));
+        };
+        this.OP_BOOLAND = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(0) !== 0 && b.compare(0) !== 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_BOOLOR = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(0) !== 0 || b.compare(0) !== 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_NUMEQUAL = this.OP_EQUAL;
+        this.OP_NUMNOTEQUAL = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(b) !== 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_LESSTHAN = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(b) < 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_GREATERTHAN = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(b) > 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_LESSTHANOREQUAL = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(b) <= 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_GREATERTHANOREQUAL = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(b) >= 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+        this.OP_MIN = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(b) <= 0) {
+                this.push(a);
+            } else {
+                this.push(b);
+            }
+        };
+        this.OP_MAX = function() {
+            var b = this.pop();
+            var a = this.pop();
+            if (a.compare(b) >= 0) {
+                this.push(a);
+            } else {
+                this.push(b);
+            }
+        };
+        this.OP_WITHIN = function() {
+            var max = this.pop();
+            var min = this.pop();
+            var x = this.pop();
+            if (x.compare(min) >= 0 && x.compare(max) < 0) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
     };
 %}
 
@@ -203,12 +345,27 @@ OP_([2-9]|1[0-6])\b       { return 'OP_DATA'; }
 "OP_2ROT"                 { return 'OP_FUNCTION'; }
 "OP_2SWAP"                { return 'OP_FUNCTION'; }
 /* Bitwise logic */
-"OP_EQUAL"                { return 'OP_EQUAL'; }
+"OP_EQUAL"                { return 'OP_FUNCTION'; }
 /* Arithmetic */
-"OP_1ADD"                 { return 'OP_1ADD'; }
-"OP_1SUB"                 { return 'OP_1SUB'; }
-"OP_NEGATE"               { return 'OP_NEGATE'; }
-"OP_ABS"                  { return 'OP_ABS'; }
+"OP_1ADD"                 { return 'OP_FUNCTION'; }
+"OP_1SUB"                 { return 'OP_FUNCTION'; }
+"OP_NEGATE"               { return 'OP_FUNCTION'; }
+"OP_ABS"                  { return 'OP_FUNCTION'; }
+"OP_0NOT"                 { return 'OP_FUNCTION'; }
+"OP_0NOTEQUAL"            { return 'OP_FUNCTION'; }
+"OP_ADD"                  { return 'OP_FUNCTION'; }
+"OP_SUB"                  { return 'OP_FUNCTION'; }
+"OP_BOOLAND"              { return 'OP_FUNCTION'; }
+"OP_BOOLOR"               { return 'OP_FUNCTION'; }
+"OP_NUMEQUAL"             { return 'OP_FUNCTION'; }
+"OP_NUMNOTEQUAL"          { return 'OP_FUNCTION'; }
+"OP_LESSTHAN"             { return 'OP_FUNCTION'; }
+"OP_GREATERTHAN"          { return 'OP_FUNCTION'; }
+"OP_LESSTHANOREQUAL"      { return 'OP_FUNCTION'; }
+"OP_GREATERTHANOREQUAL"   { return 'OP_FUNCTION'; }
+"OP_MIN"                  { return 'OP_FUNCTION'; }
+"OP_MAX"                  { return 'OP_FUNCTION'; }
+"OP_WITHIN"               { return 'OP_FUNCTION'; }
 /* Crypto */
 "OP_RIPEMD160"            { return 'OP_RIPEMD160'; }
 "OP_SHA1"                 { return 'OP_SHA1'; }
@@ -232,14 +389,8 @@ expressions
         %{
             var js = beautify($1);
             var evaluate = new Function('stack', 'util', js);
-
             var stack = new ScriptStack();
-            return {
-                evaluate: function() {
-                    return evaluate(stack, util);
-                },
-                stack: stack
-            };
+            return evaluate(stack, util);
         %}
     ;
 
@@ -279,12 +430,12 @@ nonterminal
         %{
             var b1 = $statement1.substr('OP_NOTIF'.length);
             var b2 = $statement2.substr('OP_ELSE'.length);
-            $$ = ($0 || '') + 'if (stack.pop().compare(0) === 0) {' + b1 + '} else {' + b2 + '};';
+            $$ = ($0 || '') + 'if (stack.pop().equals(0)) {' + b1 + '} else {' + b2 + '};';
         %}
     | OP_NOTIF statement OP_ENDIF
         %{
             var b1 = $statement.substr('OP_NOTIF'.length);
-            $$ = ($0 || '') + 'if (stack.pop().compare(0) === 0) {' + b1 + '};';
+            $$ = ($0 || '') + 'if (stack.pop().equals(0)) {' + b1 + '};';
         %}
     | OP_NOP
         %{
@@ -310,26 +461,6 @@ nonterminal
     | OP_FUNCTION
         %{
             $$ = ($0 || '') + 'stack.' + $1  + '();'
-        %}
-    | OP_EQUAL
-        %{
-            $$ = ($0 || '') + 'if (stack.pop().equals(stack.pop())) { stack.push(1); } else { stack.push(0); }; ';
-        %}
-    | OP_1ADD
-        %{
-            $$ = ($0 || '') + 'stack.push(stack.pop().add(1));';
-        %}
-    | OP_1SUB
-        %{
-            $$ = ($0 || '') + 'stack.push(stack.pop().minus(1));';
-        %}
-    | OP_NEGATE
-        %{
-            $$ = ($0 || '') + 'stack.push(stack.pop().multiply(-1));';
-        %}
-    | OP_ABS
-        %{
-            $$ = ($0 || '') + 'stack.push(stack.pop().abs());';
         %}
     | OP_RIPEMD160
         %{
