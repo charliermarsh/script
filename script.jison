@@ -302,6 +302,23 @@
                 this.push(0);
             }
         };
+
+        // Crypto
+        this.OP_RIPEMD160 = function() {
+            this.push(util.ripemd160(this.pop()));;
+        };
+        this.OP_SHA1 = function() {
+            this.push(util.sha1(this.pop()));;
+        };
+        this.OP_SHA256 = function() {
+            this.push(util.sha256(this.pop()));;
+        };
+        this.OP_HASH160 = function() {
+            this.push(util.ripemd160(util.sha256(this.pop())));;
+        };
+        this.OP_HASH256 = function() {
+            this.push(util.sha256(util.sha256(this.pop())));;
+        };
     };
 %}
 
@@ -367,11 +384,11 @@ OP_([2-9]|1[0-6])\b       { return 'OP_DATA'; }
 "OP_MAX"                  { return 'OP_FUNCTION'; }
 "OP_WITHIN"               { return 'OP_FUNCTION'; }
 /* Crypto */
-"OP_RIPEMD160"            { return 'OP_RIPEMD160'; }
-"OP_SHA1"                 { return 'OP_SHA1'; }
-"OP_SHA256"               { return 'OP_SHA256'; }
-"OP_HASH160"              { return 'OP_HASH160'; }
-"OP_HASH256"              { return 'OP_HASH256'; }
+"OP_RIPEMD160"            { return 'OP_FUNCTION'; }
+"OP_SHA1"                 { return 'OP_FUNCTION'; }
+"OP_SHA256"               { return 'OP_FUNCTION'; }
+"OP_HASH160"              { return 'OP_FUNCTION'; }
+"OP_HASH256"              { return 'OP_FUNCTION'; }
 <<EOF>>                   { return 'EOF'; }
 
 /lex
@@ -388,9 +405,9 @@ expressions
     | terminal EOF
         %{
             var js = beautify($1);
-            var evaluate = new Function('stack', 'util', js);
+            var evaluate = new Function('stack', js);
             var stack = new ScriptStack();
-            return evaluate(stack, util);
+            return evaluate(stack);
         %}
     ;
 
@@ -461,25 +478,5 @@ nonterminal
     | OP_FUNCTION
         %{
             $$ = ($0 || '') + 'stack.' + $1  + '();'
-        %}
-    | OP_RIPEMD160
-        %{
-            $$ = ($0 || '') + 'stack.push(util.ripemd160(stack.pop()));';
-        %}
-    | OP_SHA1
-        %{
-            $$ = ($0 || '') + 'stack.push(util.sha1(stack.pop()));';
-        %}
-    | OP_SHA256
-        %{
-            $$ = ($0 || '') + 'stack.push(util.sha256(stack.pop()));';
-        %}
-    | OP_HASH160
-        %{
-            $$ = ($0 || '') + 'stack.push(util.ripemd160(util.sha256(stack.pop())));';
-        %}
-    | OP_HASH256
-        %{
-            $$ = ($0 || '') + 'stack.push(util.sha256(util.sha256(stack.pop())));';
         %}
     ;
