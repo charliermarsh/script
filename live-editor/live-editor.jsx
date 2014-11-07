@@ -2,6 +2,7 @@ var React = require('react');
 
 var CodeMirrorEditor = require('./code-mirror-editor.jsx');
 var ComponentPreview = require('./live-compile.jsx');
+var SigGenerator = require('./sig-generator.jsx');
 
 var ScriptPlayground = React.createClass({
   propTypes: {
@@ -29,6 +30,7 @@ var ScriptPlayground = React.createClass({
       <div className='playgroundPreview'>
         <ComponentPreview code={this.state.code} />
       </div>
+      <SigGenerator />
     </div>;
   },
 });

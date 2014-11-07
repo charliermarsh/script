@@ -1,6 +1,7 @@
 jest.autoMockOff();
 
 var exec = require('../index.js');
+var keyGen = require('../key-gen.js');
 var config = require('../config.js');
 
 describe('constants', function() {
@@ -204,10 +205,6 @@ describe('crypto', function() {
     });
 
     it('correctly checks signatures', function() {
-        // Key generation
-        var ecdsa = require('ecdsa');
-        var sha256 = require('sha256');
-
         // (These were generated offline.)
         var publicKey = '022e789558bfe08662c99b3badf38449ca39338ad9191bdfc7018128da624d02c8';
         var privateKey = '4d01ffe2b0d8797aed5f187af4c310082e6b429ed662848d52aba2cd6df847c2';
