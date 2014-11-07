@@ -2,7 +2,9 @@
   "name": "Script.js",
   "description": "Compile Bitcoin Script to JavaScript.",
   "scripts": {
-    "build": "./node_modules/.bin/browserify index.js -o bundle.js",
+    "compile": "./node_modules/.bin/jison script.jison",
+    "bundle": "./node_modules/.bin/browserify index.js -o bundle.js",
+    "build": "npm run compile && npm run bundle",
     "test": "jest"
   },
   "dependencies": {
