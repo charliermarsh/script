@@ -13,6 +13,17 @@ describe('constants', function() {
             expect(exec(script)).toBe(false);
         }
     });
+
+    it('pushes arbitrary hex data', function() {
+        for (var i = 0; i < 20; i++) {
+            var script = i.toString(16) + ' OP_0' ;
+            for (var j = 0; j < i; j++) {
+                script += ' OP_1ADD';
+            }
+            script += ' OP_EQUAL OP_VERIFY';
+            expect(exec(script)).toBe(true);
+        }
+    });
 });
 
 describe('valid', function() {
@@ -22,6 +33,10 @@ describe('valid', function() {
 
     it('returns false for an invalid stack', function() {
         expect(exec('OP_0 OP_VERIFY')).toBe(false);
+    });
+
+    it('allows for concatenated OP_EQUALVERIFY', function() {
+        expect(exec('OP_0 OP_0 OP_EQUALVERIFY')).toBe(true);
     });
 });
 
@@ -184,6 +199,24 @@ describe('crypto', function() {
 
     it('generates the same hash for the same value', function() {
         var script = 'OP_1 OP_HASH256 OP_1 OP_HASH256 OP_EQUAL OP_VERIFY';
+        expect(exec(script)).toBe(true);
+    });
+
+    it('correctly checks signatures', function() {
+        // Key generation
+        var ecdsa = require('ecdsa');
+        var sha256 = require('sha256');
+        var publicKey = '022e789558bfe08662c99b3badf38449ca39338ad9191bdfc7018128da624d02c8';
+        var privateKey = '4d01ffe2b0d8797aed5f187af4c310082e6b429ed662848d52aba2cd6df847c2';
+
+        // Sign message
+        var msg = new Buffer('Secure', 'utf8');
+        var shaMsg = new Buffer(sha256(msg), 'hex');
+        var signature = ecdsa.sign(shaMsg, new Buffer(privateKey, 'hex'));
+        var concatenatedSig = signature.r.toString() + signature.s.toString();
+
+        // Run script
+        var script = concatenatedSig + ' ' + publicKey + ' OP_CHECKSIG OP_VERIFY';
         expect(exec(script)).toBe(true);
     });
 });

@@ -4,9 +4,10 @@
     var base = 16;
 
     // Utilities required in Jison compiler
-    var bigInt = require('big-integer');
+    var bigInt = require('big-integer'); // For general BigInteger operations
+    var bigi = require('bigi'); // For ECDSA specifically
+    var ecdsa = require('ecdsa');
     var beautify = require('js-beautify').js_beautify;
-    var O = require('observed');
 
     // Utilities required in compiled code
     var util = {
@@ -22,7 +23,7 @@
         sha256: function(data) {
             data = data.toString(base);
             return require('sha256')(data);
-        },
+        }
     };
 
     // Setup
@@ -54,8 +55,16 @@
             return Array.prototype.push.apply(this, serialized);
         };
 
+        this.pushKey = function() {
+            return Array.prototype.push.apply(this, arguments);
+        };
+
         this.pop = function() {
             return deserialize(Array.prototype.pop.apply(this));
+        };
+
+        this.popKey = function() {
+            return Array.prototype.pop.apply(this);
         };
 
         this.peek = function() {
@@ -333,6 +342,51 @@
         this.OP_HASH256 = function() {
             this.push(util.sha256(util.sha256(this.pop())));;
         };
+        this.OP_CHECKSIG = function() {
+            // As this is just a toy, we don't actually hash the message
+            // contents; we just sign a nonce
+            var msg = new Buffer('Secure', 'utf8');
+            var shaMsg = new Buffer(require('sha256')(msg), 'hex');
+
+            // Parse public key (weirdly, Buffer requires even-length string)
+            var pubKeyString = this.pop().toString(base);
+            if (pubKeyString.length % 2 != 0) {
+                pubKeyString = '0' + pubKeyString;
+            }
+            var pubKey = new Buffer(pubKeyString, 'hex');
+
+            // Parse signature
+            var sigComponents = this.pop().toString(base);
+            var rString = sigComponents.substr(0, sigComponents.length/2);
+            var sString = sigComponents.substr(sigComponents.length/2);
+            var signature = {
+                r: new bigi(rString),
+                s: new bigi(sString)
+            };
+
+            // Verify signature
+            if (ecdsa.verify(shaMsg, signature, pubKey)) {
+                this.push(1);
+            } else {
+                this.push(0);
+            }
+        };
+
+        // Terminals
+        this.OP_VERIFY = function() {
+            return (this.pop().compare(0) !== 0);
+        };
+        this.OP_EQUALVERIFY = function() {
+            this.OP_EQUAL();
+            return this.OP_VERIFY();
+        };
+        this.OP_CHECKSIGVERIFY = function() {
+            this.OP_CHECKSIG();
+            return this.OP_VERIFY();
+        };
+        this.OP_RETURN = function() {
+            return false;
+        };
     };
 %}
 
@@ -341,7 +395,7 @@
 
 %%
 \s+                       { /* skip whitespace */ }
-0x([0-9]|[A-F]|[a-f])+\b  { return 'DATA'; }
+([0-9]|[A-F]|[a-f])+\b    { return 'DATA'; }
 /* Constants */
 "OP_0"                    { return 'OP_FUNCTION'; }
 "OP_FALSE"                { return 'OP_FUNCTION'; }
@@ -355,8 +409,10 @@ OP_([2-9]|1[0-6])\b       { return 'DATA'; }
 "OP_NOTIF"                { return 'OP_NOTIF'; }
 "OP_ELSE"                 { return 'OP_ELSE'; }
 "OP_ENDIF"                { return 'OP_ENDIF'; }
-"OP_VERIFY"               { return 'OP_VERIFY'; }
-"OP_RETURN"               { return 'OP_RETURN'; }
+"OP_VERIFY"               { return 'OP_TERMINAL'; }
+"OP_RETURN"               { return 'OP_TERMINAL'; }
+"OP_EQUALVERIFY"          { return 'OP_TERMINAL'; }
+"OP_CHECKSIGVERIFY"       { return 'OP_TERMINAL'; }
 /* Stack */
 "OP_IFDUP"                { return 'OP_FUNCTION'; }
 "OP_DEPTH"                { return 'OP_FUNCTION'; }
@@ -403,6 +459,7 @@ OP_([2-9]|1[0-6])\b       { return 'DATA'; }
 "OP_SHA256"               { return 'OP_FUNCTION'; }
 "OP_HASH160"              { return 'OP_FUNCTION'; }
 "OP_HASH256"              { return 'OP_FUNCTION'; }
+"OP_CHECKSIG"             { return 'OP_FUNCTION'; }
 <<EOF>>                   { return 'EOF'; }
 
 /lex
@@ -425,13 +482,9 @@ expressions
     ;
 
 terminal
-    : OP_VERIFY
+    : OP_TERMINAL
         %{
-            $$ = ($0 || '') + 'return (stack.pop().compare(0) !== 0);';
-        %}
-    | OP_RETURN
-        %{
-            $$ = ($0 || '') + 'return false;';
+            $$ = ($0 || '') + 'return stack.' + $1  + '();'
         %}
     ;
 
@@ -445,11 +498,13 @@ nonterminal
         %{
             var value;
             if ($1.indexOf('OP_') !== -1) {
-                value = $1.substr('OP_'.length);
+                // These statements encrypt their value as decimal, so convert
+                value = parseInt($1.substr('OP_'.length)).toString(base);
             } else {
+                // Otherwise, conversion takes place anyway when you push
                 value = $1;
             }
-            $$ = ($0 || '') + 'stack.push(' + value + ');';
+            $$ = ($0 || '') + 'stack.push("' + value + '");';
         %}
     | OP_IF statement OP_ELSE statement OP_ENDIF
         %{
