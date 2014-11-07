@@ -1,6 +1,7 @@
 # Project-specific
 script.js
 bundle.js
+static
 
 # Logs
 logs
