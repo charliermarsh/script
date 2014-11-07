@@ -15,7 +15,7 @@ describe('constants', function() {
     });
 
     it('pushes arbitrary hex data', function() {
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 17; i++) {
             var script = i.toString(16) + ' OP_0' ;
             for (var j = 0; j < i; j++) {
                 script += ' OP_1ADD';
@@ -206,6 +206,8 @@ describe('crypto', function() {
         // Key generation
         var ecdsa = require('ecdsa');
         var sha256 = require('sha256');
+
+        // (These were generated offline.)
         var publicKey = '022e789558bfe08662c99b3badf38449ca39338ad9191bdfc7018128da624d02c8';
         var privateKey = '4d01ffe2b0d8797aed5f187af4c310082e6b429ed662848d52aba2cd6df847c2';
 

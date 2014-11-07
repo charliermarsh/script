@@ -9,7 +9,7 @@
     var ecdsa = require('ecdsa');
     var beautify = require('js-beautify').js_beautify;
 
-    // Utilities required in compiled code
+    // Utilities required in compiled code; they all take bigInts as args
     var util = {
         // Crypto
         ripemd160: function(data) {
@@ -23,6 +23,23 @@
         sha256: function(data) {
             data = data.toString(base);
             return require('sha256')(data);
+        },
+        processPubKey: function(data) {
+            var pubKeyString = data.toString(base);
+            if (pubKeyString.length % 2 != 0) {
+                pubKeyString = '0' + pubKeyString;
+            }
+            return new Buffer(pubKeyString, 'hex');
+        },
+        processSignature: function(data) {
+            var sigComponents = data.toString(base);
+            var rString = sigComponents.substr(0, sigComponents.length/2);
+            var sString = sigComponents.substr(sigComponents.length/2);
+            var signature = {
+                r: new bigi(rString),
+                s: new bigi(sString)
+            };
+            return signature;
         }
     };
 
@@ -33,6 +50,20 @@
         };
         var deserialize = function(data) {
             return bigInt(data, base);
+        };
+
+        // Basic array operations
+        this.push = function() {
+            var serialized = [].map.call(arguments, serialize);
+            return Array.prototype.push.apply(this, serialized);
+        };
+        this.pop = function() {
+            return deserialize(Array.prototype.pop.apply(this));
+        };
+        this.peek = function() {
+            var value = this.pop();
+            this.push(value);
+            return value;
         };
 
         // Constants
@@ -48,30 +79,6 @@
             this.push(1);
         };
         this.OP_TRUE = this.OP_1;
-
-        // Basic array operations
-        this.push = function() {
-            var serialized = [].map.call(arguments, serialize);
-            return Array.prototype.push.apply(this, serialized);
-        };
-
-        this.pushKey = function() {
-            return Array.prototype.push.apply(this, arguments);
-        };
-
-        this.pop = function() {
-            return deserialize(Array.prototype.pop.apply(this));
-        };
-
-        this.popKey = function() {
-            return Array.prototype.pop.apply(this);
-        };
-
-        this.peek = function() {
-            var value = this.pop();
-            this.push(value);
-            return value;
-        };
 
         // Stack operations
         this.OP_IFDUP = function() {
@@ -348,21 +355,11 @@
             var msg = new Buffer('Secure', 'utf8');
             var shaMsg = new Buffer(require('sha256')(msg), 'hex');
 
-            // Parse public key (weirdly, Buffer requires even-length string)
-            var pubKeyString = this.pop().toString(base);
-            if (pubKeyString.length % 2 != 0) {
-                pubKeyString = '0' + pubKeyString;
-            }
-            var pubKey = new Buffer(pubKeyString, 'hex');
+            // Parse public key
+            var pubKey = util.processPubKey(this.pop());
 
             // Parse signature
-            var sigComponents = this.pop().toString(base);
-            var rString = sigComponents.substr(0, sigComponents.length/2);
-            var sString = sigComponents.substr(sigComponents.length/2);
-            var signature = {
-                r: new bigi(rString),
-                s: new bigi(sString)
-            };
+            var signature = util.processSignature(this.pop());
 
             // Verify signature
             if (ecdsa.verify(shaMsg, signature, pubKey)) {
@@ -477,7 +474,10 @@ expressions
         %{
             var js = beautify($1);
             var evaluate = new Function('stack', js);
-            return evaluate(new ScriptStack());
+            return {
+                value: evaluate(new ScriptStack()),
+                code: js
+            };
         %}
     ;
 
