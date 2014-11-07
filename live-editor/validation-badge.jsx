@@ -9,18 +9,16 @@ function textForValidity(isValid) {
 }
 
 var ValidationBadge = React.createClass({
-    propTypes: function() {
-      return {
-        isValid: React.PropTypes.bool
-      };
-    },
+  propTypes: {
+    isValid: React.PropTypes.bool
+  },
 
-    render: function() {
-      var className = 'badge ' + classForValidity(this.props.isValid);
-      return <div className={className}>
-        {textForValidity(this.props.isValid)}
-      </div>
-    }
+  render: function() {
+    var className = 'badge ' + classForValidity(this.props.isValid);
+    return <div className={className}>
+      {textForValidity(this.props.isValid)}
+    </div>
+  }
 });
 
 module.exports = ValidationBadge;
