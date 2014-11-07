@@ -1,6 +1,7 @@
 /* description: Compiles Bitcoin Script to JavaScript. */
 
 %{
+    var config = require('./config.js');
     var base = 16;
 
     // Utilities required in Jison compiler
@@ -352,8 +353,7 @@
         this.OP_CHECKSIG = function() {
             // As this is just a toy, we don't actually hash the message
             // contents; we just sign a nonce
-            var msg = new Buffer('Secure', 'utf8');
-            var shaMsg = new Buffer(require('sha256')(msg), 'hex');
+            var shaMsg = config.nonce;
 
             // Parse public key
             var pubKey = util.processPubKey(this.pop());

@@ -1,6 +1,7 @@
 jest.autoMockOff();
 
 var exec = require('../index.js');
+var config = require('../config.js');
 
 describe('constants', function() {
     it('pushes 2-16 for OP_[2-16]', function() {
@@ -212,8 +213,7 @@ describe('crypto', function() {
         var privateKey = '4d01ffe2b0d8797aed5f187af4c310082e6b429ed662848d52aba2cd6df847c2';
 
         // Sign message
-        var msg = new Buffer('Secure', 'utf8');
-        var shaMsg = new Buffer(sha256(msg), 'hex');
+        var shaMsg = config.nonce;
         var signature = ecdsa.sign(shaMsg, new Buffer(privateKey, 'hex'));
         var concatenatedSig = signature.r.toString() + signature.s.toString();
 
