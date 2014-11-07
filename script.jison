@@ -2,11 +2,11 @@
 
 %{
     var config = require('./config.js');
+    var keyGen = require('./key-gen.js');
     var base = 16;
 
     // Utilities required in Jison compiler
-    var bigInt = require('big-integer'); // For general BigInteger operations
-    var bigi = require('bigi'); // For ECDSA specifically
+    var bigInt = require('big-integer');
     var ecdsa = require('ecdsa');
     var beautify = require('js-beautify').js_beautify;
 
@@ -26,21 +26,10 @@
             return require('sha256')(data);
         },
         processPubKey: function(data) {
-            var pubKeyString = data.toString(base);
-            if (pubKeyString.length % 2 != 0) {
-                pubKeyString = '0' + pubKeyString;
-            }
-            return new Buffer(pubKeyString, 'hex');
+            return keyGen.processPubKeyString(data.toString(base));
         },
         processSignature: function(data) {
-            var sigComponents = data.toString(base);
-            var rString = sigComponents.substr(0, sigComponents.length/2);
-            var sString = sigComponents.substr(sigComponents.length/2);
-            var signature = {
-                r: new bigi(rString),
-                s: new bigi(sString)
-            };
-            return signature;
+            return keyGen.processSignatureString(data.toString(base));
         }
     };
 
