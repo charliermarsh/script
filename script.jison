@@ -26,10 +26,12 @@
             return require('sha256')(data);
         },
         processPubKey: function(data) {
-            return keyGen.processPubKeyString(data.toString(base));
+            data = data.toString(base);
+            return keyGen.processPubKeyString(data);
         },
         processSignature: function(data) {
-            return keyGen.processSignatureString(data.toString(base));
+            data = data.toString(base);
+            return keyGen.processSignatureString(data);
         }
     };
 
