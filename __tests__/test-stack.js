@@ -1,8 +1,7 @@
 jest.autoMockOff();
 
+var _ = require('underscore');
 var exec = require('../index.js');
-var keyGen = require('../key-gen.js');
-var config = require('../config.js');
 
 describe('constants', function() {
     it('pushes 2-16 for OP_[2-16]', function() {
@@ -189,33 +188,6 @@ describe('arithmetic', function() {
 
     it('correctly computes the maximum', function() {
         var script = 'OP_5 OP_12 OP_MAX OP_12 OP_EQUAL OP_VERIFY';
-        expect(exec(script)).toBe(true);
-    });
-});
-
-describe('crypto', function() {
-    it('generates different hashes for different values', function() {
-        var script = 'OP_1 OP_HASH256 OP_0 OP_HASH256 OP_EQUAL OP_VERIFY';
-        expect(exec(script)).toBe(false);
-    });
-
-    it('generates the same hash for the same value', function() {
-        var script = 'OP_1 OP_HASH256 OP_1 OP_HASH256 OP_EQUAL OP_VERIFY';
-        expect(exec(script)).toBe(true);
-    });
-
-    it('correctly checks signatures', function() {
-        // (These were generated offline.)
-        var publicKey = '022e789558bfe08662c99b3badf38449ca39338ad9191bdfc7018128da624d02c8';
-        var privateKey = '4d01ffe2b0d8797aed5f187af4c310082e6b429ed662848d52aba2cd6df847c2';
-
-        // Sign message
-        var shaMsg = config.nonce;
-        var signature = ecdsa.sign(shaMsg, new Buffer(privateKey, 'hex'));
-        var concatenatedSig = signature.r.toString() + signature.s.toString();
-
-        // Run script
-        var script = concatenatedSig + ' ' + publicKey + ' OP_CHECKSIG OP_VERIFY';
         expect(exec(script)).toBe(true);
     });
 });

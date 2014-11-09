@@ -32,6 +32,11 @@
         processSignature: function(data) {
             data = data.toString(base);
             return keyGen.processSignatureString(data);
+        },
+        verifySignature: function(signature, pubKey) {
+            // As this is just a toy, we don't actually hash the message
+            // contents; we just sign a nonce
+            return ecdsa.verify(config.nonce, signature, pubKey);
         }
     };
 
@@ -189,9 +194,9 @@
             var b = this.pop();
             var a = this.pop();
             if (a.equals(b)) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
 
@@ -210,16 +215,16 @@
         };
         this.OP_NOT = function() {
             if (this.pop().equals(0)) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_0NOTEQUAL = function() {
             if (this.pop().equals(0)) {
-                this.push(0);
+                this.OP_0();
             } else {
-                this.push(1);
+                this.OP_1();
             }
         };
         this.OP_ADD = function() {
@@ -236,18 +241,18 @@
             var b = this.pop();
             var a = this.pop();
             if (a.compare(0) !== 0 && b.compare(0) !== 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_BOOLOR = function() {
             var b = this.pop();
             var a = this.pop();
             if (a.compare(0) !== 0 || b.compare(0) !== 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_NUMEQUAL = this.OP_EQUAL;
@@ -255,45 +260,45 @@
             var b = this.pop();
             var a = this.pop();
             if (a.compare(b) !== 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_LESSTHAN = function() {
             var b = this.pop();
             var a = this.pop();
             if (a.compare(b) < 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_GREATERTHAN = function() {
             var b = this.pop();
             var a = this.pop();
             if (a.compare(b) > 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_LESSTHANOREQUAL = function() {
             var b = this.pop();
             var a = this.pop();
             if (a.compare(b) <= 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_GREATERTHANOREQUAL = function() {
             var b = this.pop();
             var a = this.pop();
             if (a.compare(b) >= 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
         this.OP_MIN = function() {
@@ -319,9 +324,9 @@
             var min = this.pop();
             var x = this.pop();
             if (x.compare(min) >= 0 && x.compare(max) < 0) {
-                this.push(1);
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
         };
 
@@ -342,10 +347,6 @@
             this.push(util.sha256(util.sha256(this.pop())));;
         };
         this.OP_CHECKSIG = function() {
-            // As this is just a toy, we don't actually hash the message
-            // contents; we just sign a nonce
-            var shaMsg = config.nonce;
-
             // Parse public key
             var pubKey = util.processPubKey(this.pop());
 
@@ -353,11 +354,60 @@
             var signature = util.processSignature(this.pop());
 
             // Verify signature
-            if (ecdsa.verify(shaMsg, signature, pubKey)) {
-                this.push(1);
+            if (util.verifySignature(signature, pubKey)) {
+                this.OP_1();
             } else {
-                this.push(0);
+                this.OP_0();
             }
+        };
+        this.OP_CHECKMULTISIG = function() {
+            // Extract public keys
+            var numPubKeys = this.pop();
+            var pubKeys = [];
+            var i = 0;
+            while (numPubKeys.compare(i) === 1) {
+                pubKeys.push(util.processPubKey(this.pop()));
+                i++;
+            }
+
+            // Extract signatures
+            var numSignatures = this.pop();
+            var signatures = []
+            i = 0;
+            while (numSignatures.compare(i) === 1) {
+                signatures.push(util.processSignature(this.pop()));
+                i++;
+            }
+
+            // Match keys against signatures. Note that any public key that
+            // fails a comparison is then removed, in accordance with the spec.
+            for (i = 0; i < signatures.length; i++) {
+
+                var matched = -1;
+                for (var j = 0; j < pubKeys.length; j++) {
+                    if (util.verifySignature(signatures[i], pubKeys[j])) {
+                        matched = j;
+                        break;
+                    }
+                }
+
+                if (matched === -1) {
+                    this.OP_0;
+                    return;
+                } else {
+                    // Remove used public keys
+                    pubKeys = pubKeys.splice(matched + 1);
+                }
+
+                var remainingSignatures = signatures.length - (i + 1);
+                if (pubKeys.length < remainingSignatures) {
+                    this.OP_0();
+                    return;
+                }
+            }
+
+            // If all checks passed, push `true`
+            this.OP_1();
         };
 
         // Terminals
@@ -370,6 +420,10 @@
         };
         this.OP_CHECKSIGVERIFY = function() {
             this.OP_CHECKSIG();
+            return this.OP_VERIFY();
+        };
+        this.OP_CHECKMULTISIGVERIFY = function() {
+            this.OP_CHECKMULTISIG();
             return this.OP_VERIFY();
         };
         this.OP_RETURN = function() {
@@ -401,6 +455,7 @@ OP_([2-9]|1[0-6])\b       { return 'DATA'; }
 "OP_RETURN"               { return 'OP_TERMINAL'; }
 "OP_EQUALVERIFY"          { return 'OP_TERMINAL'; }
 "OP_CHECKSIGVERIFY"       { return 'OP_TERMINAL'; }
+"OP_CHECKMULTISIGVERIFY"  { return 'OP_TERMINAL'; }
 /* Stack */
 "OP_IFDUP"                { return 'OP_FUNCTION'; }
 "OP_DEPTH"                { return 'OP_FUNCTION'; }
@@ -448,6 +503,7 @@ OP_([2-9]|1[0-6])\b       { return 'DATA'; }
 "OP_HASH160"              { return 'OP_FUNCTION'; }
 "OP_HASH256"              { return 'OP_FUNCTION'; }
 "OP_CHECKSIG"             { return 'OP_FUNCTION'; }
+"OP_CHECKMULTISIG"        { return 'OP_FUNCTION'; }
 <<EOF>>                   { return 'EOF'; }
 
 /lex

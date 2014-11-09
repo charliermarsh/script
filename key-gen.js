@@ -1,13 +1,14 @@
 var sha256 = require('sha256');
 var ecdsa = require('ecdsa');
 var sr = require('secure-random');
-var CoinKey = require('coinkey');
 var bigi = require('bigi');
 var config = require('./config.js');
 
 
 module.exports = {
     generateSignature: function() {
+        var CoinKey = require('coinkey');
+
         // Generate random public-private keys
         var ck = new CoinKey(sr.randomBuffer(32), true);
         var pubKeyString = ck.publicKey.toString('hex');
