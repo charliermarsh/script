@@ -56,7 +56,7 @@ var ComponentPreview = React.createClass({
               codeText={parsedCode.code}
               readOnly={true}
               lineNumbers={true}
-              mode={'javascript'} />
+              mode='javascript' />
             <ValidationBadge isValid={parsedCode.value} />
           </div>,
           mountNode

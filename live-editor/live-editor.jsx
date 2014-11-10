@@ -23,6 +23,7 @@ var ScriptPlayground = React.createClass({
     return <div className='playground'>
       <div className='playgroundCode'>
         <CodeMirrorEditor key='script'
+                          mode='script'
                           onChange={this.handleCodeChange}
                           className='playgroundStage'
                           codeText={this.state.code} />

@@ -1,6 +1,15 @@
 var React = require('react');
 var _ = require('underscore');
 
+// Syntax highlighter for Bitcoin Script
+CodeMirror.defineSimpleMode('script', {
+  start: [
+    // The regex matches the token, the token property contains the type
+    {regex: /([0-9]|[A-F]|[a-f])+\b/, token: 'number'},
+    {regex: /OP\_(.+)\b/, token: 'variable'}
+  ]
+});
+
 var CodeMirrorEditor = React.createClass({
   componentDidMount: function() {
 
