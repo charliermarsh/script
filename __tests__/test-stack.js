@@ -41,6 +41,15 @@ describe('valid', function() {
     });
 });
 
+describe('errors', function() {
+    it('throws when you pop off an empty stack', function() {
+        try {
+            exec('OP_DROP OP_1 OP_VERIFY')
+            expect(true).toBe(false);
+        } catch(e) {}
+    });
+})
+
 describe('control flow', function() {
     it('adds the body if condition passes', function() {
         var script = 'OP_0 OP_1 OP_IF OP_1ADD OP_ENDIF OP_VERIFY';

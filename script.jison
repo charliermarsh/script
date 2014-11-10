@@ -40,6 +40,12 @@
         }
     };
 
+    function StackEmptyException() {
+        this.toString = function() {
+          return 'Attempted to pop from an empty stack.';
+    };
+}
+
     // Setup
     var ScriptStack = function() {
         var serialize = function(data) {
@@ -55,6 +61,9 @@
             return Array.prototype.push.apply(this, serialized);
         };
         this.pop = function() {
+            if (this.length === 0 || this.length == null) {
+                throw new StackEmptyException();
+            }
             return deserialize(Array.prototype.pop.apply(this));
         };
         this.peek = function() {
@@ -392,7 +401,7 @@
                 }
 
                 if (matched === -1) {
-                    this.OP_0;
+                    this.OP_0();
                     return;
                 } else {
                     // Remove used public keys
