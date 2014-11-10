@@ -67,3 +67,7 @@ To build the live editor, run `make` from the `live-editor` directory, followed 
 ### Testing
 
 Unit tests can be run with `npm run test`, which will execute the [Jest](https://facebook.github.io/jest/) test runner.
+
+## License
+
+MIT.
