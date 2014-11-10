@@ -446,7 +446,7 @@
 
 %%
 \s+                       { /* skip whitespace */ }
-([0-9]|[A-F]|[a-f])+\b    { return 'DATA'; }
+(0x)?([0-9]|[A-F]|[a-f])+\b  { return 'DATA'; }
 /* Constants */
 "OP_0"                    { return 'OP_FUNCTION'; }
 "OP_FALSE"                { return 'OP_FUNCTION'; }
@@ -556,8 +556,10 @@ nonterminal
             if ($1.indexOf('OP_') !== -1) {
                 // These statements encrypt their value as decimal, so convert
                 value = parseInt($1.substr('OP_'.length)).toString(base);
-            } else {
+            } else if ($1.indexOf('0x') !== -1) {
                 // Otherwise, conversion takes place anyway when you push
+                value = $1.substr('0x'.length);
+            } else {
                 value = $1;
             }
             $$ = ($0 || '') + 'stack.push("' + value + '");';

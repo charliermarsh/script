@@ -25,6 +25,17 @@ describe('constants', function() {
             expect(exec(script)).toBe(true);
         }
     });
+
+    it('pushes arbitrary hex data with a 0x prefix', function() {
+        for (var i = 0; i < 17; i++) {
+            var script = '0x' + i.toString(16) + ' OP_0' ;
+            for (var j = 0; j < i; j++) {
+                script += ' OP_1ADD';
+            }
+            script += ' OP_EQUAL OP_VERIFY';
+            expect(exec(script)).toBe(true);
+        }
+    });
 });
 
 describe('valid', function() {
