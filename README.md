@@ -1,9 +1,7 @@
 script
 ======
 
-JavaScript implementation of Script, Bitcoin's scripting language.
-
-Live editor is inspired by (and heavily borrows from) Joel Burget's [react-live-editor](https://github.com/joelburget/react-live-editor).
+JavaScript implementation of Script, Bitcoin's scripting language, along with a Script Playground, deployed [here](http://www.princeton.edu/~crmarsh/script-playground/).
 
 ## How It Works
 
