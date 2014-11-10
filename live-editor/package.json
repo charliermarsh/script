@@ -1,6 +1,10 @@
 {
   "name": "script-live-editor",
   "description": "Live editor for Bitcoin Script",
+  "scripts": {
+    "build": "make",
+    "serve": "python -m SimpleHTTPServer"
+  },
   "dependencies": {
     "browserify": "^5.12.0",
     "react": "^0.12.0",
