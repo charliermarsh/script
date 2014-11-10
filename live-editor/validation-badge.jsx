@@ -1,7 +1,7 @@
 var React = require('react');
 
 function classForValidity(isValid) {
-    return isValid ? 'valid' : 'invalid';
+    return isValid ? 'label-success' : 'label-danger';
 }
 
 function textForValidity(isValid) {
@@ -14,10 +14,10 @@ var ValidationBadge = React.createClass({
   },
 
   render: function() {
-    var className = 'badge ' + classForValidity(this.props.isValid);
-    return <div className={className}>
+    var className = 'label ' + classForValidity(this.props.isValid);
+    return <span className={className}>
       {textForValidity(this.props.isValid)}
-    </div>
+    </span>
   }
 });
 

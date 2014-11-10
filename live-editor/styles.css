@@ -1,29 +1,17 @@
-/* Badge */
-.badge {
-    color: white;
-    text-align: center
-}
-
-.invalid {
-    background-color: red
-}
-
-.valid {
-    background-color: green
+.page-header {
+    font-family: Menlo
 }
 
 /* Editors: Override default CSS */
-.playgroundPreview {
-    width: 40% !important;
-    padding: 5px !important
+html {
+    background: none !important
 }
 
-.playgroundCode {
-    width: 60% !important
+.footer {
+    height: 30px !important
 }
 
 /* Signature generator */
-
 .signer {
     float: left;
     font-size: 10px;

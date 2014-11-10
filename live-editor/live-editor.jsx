@@ -20,18 +20,36 @@ var ScriptPlayground = React.createClass({
   },
 
   render: function() {
-    return <div className='playground'>
-      <div className='playgroundCode'>
-        <CodeMirrorEditor key='script'
-                          mode='script'
-                          onChange={this.handleCodeChange}
-                          className='playgroundStage'
-                          codeText={this.state.code} />
+    return <div>
+      <div className='playground container-fluid'>
+        <div className='page-header'>
+          <h1>Script Playground</h1>
+        </div>
+        <div className='row'>
+          <div className='col-md-12'>
+            <CodeMirrorEditor key='script'
+                              mode='script'
+                              onChange={this.handleCodeChange}
+                              className='playgroundStage'
+                              codeText={this.state.code} />
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-md-12'>
+            <ComponentPreview code={this.state.code} />
+          </div>
+        </div>
       </div>
-      <div className='playgroundPreview'>
-        <ComponentPreview code={this.state.code} />
+
+      <div className='footer'>
+        <div className='container-fluid' style={{textAlign: 'center'}}>
+          <p className='text-muted' style={{margin: 5}}>
+            Created by <a href='https://www.princeton.edu/~crmarsh'>Charlie Marsh</a>.
+            Code and documentation available on <a href='https://www.github.com/crm416/script'>GitHub</a>.
+          </p>
+        </div>
       </div>
-      <SigGenerator />
+
     </div>;
   },
 });
