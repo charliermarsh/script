@@ -20,36 +20,46 @@ var ScriptPlayground = React.createClass({
   },
 
   render: function() {
-    return <div>
-      <div className='playground container-fluid'>
-        <div className='page-header'>
-          <h1>Script Playground</h1>
-        </div>
-        <div className='row'>
-          <div className='col-md-12'>
-            <CodeMirrorEditor key='script'
-                              mode='script'
-                              onChange={this.handleCodeChange}
-                              className='playgroundStage'
-                              codeText={this.state.code} />
-          </div>
-        </div>
-        <div className='row'>
-          <div className='col-md-12'>
-            <ComponentPreview code={this.state.code} />
-          </div>
-        </div>
-      </div>
+    var header =
+      <div className='page-header'>
+        <h1>Script Playground</h1>
+      </div>;
 
+    var editor =
+      <div className='row'>
+        <div className='col-md-12'>
+          <CodeMirrorEditor key='script'
+                            mode='script'
+                            onChange={this.handleCodeChange}
+                            className='playgroundStage'
+                            codeText={this.state.code} />
+        </div>
+      </div>;
+
+    var preview =
+      <div className='row'>
+        <div className='col-md-12'>
+          <ComponentPreview code={this.state.code} />
+        </div>
+      </div>;
+
+    var footer =
       <div className='footer'>
         <div className='container-fluid' style={{textAlign: 'center'}}>
-          <p className='text-muted' style={{margin: 5}}>
+          <p style={{margin: 5}}>
             Created by <a href='https://www.princeton.edu/~crmarsh'>Charlie Marsh</a>.
             Code and documentation available on <a href='https://www.github.com/crm416/script'>GitHub</a>.
           </p>
         </div>
-      </div>
+      </div>;
 
+    return <div>
+      <div className='playground container-fluid'>
+        {header}
+        {editor}
+        {preview}
+      </div>
+      {footer}
     </div>;
   },
 });
