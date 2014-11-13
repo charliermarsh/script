@@ -43,6 +43,11 @@ var ScriptPlayground = React.createClass({
         </div>
       </div>;
 
+    var generator =
+      <div className='row'>
+        <SigGenerator />
+      </div>;
+
     var footer =
       <div className='footer'>
         <div className='container-fluid' style={{textAlign: 'center'}}>
@@ -58,6 +63,7 @@ var ScriptPlayground = React.createClass({
         {header}
         {editor}
         {preview}
+        {generator}
       </div>
       {footer}
     </div>;
