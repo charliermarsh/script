@@ -2,6 +2,10 @@ var React = require('react');
 var ZeroClipboard = require('zeroclipboard');
 var keyGen = require('../key-gen.js');
 
+function truncate(s) {
+  return s.substr(0, 6) + '...';
+}
+
 var SigGenerator = React.createClass({
   getInitialState: function() {
     return {
@@ -18,13 +22,10 @@ var SigGenerator = React.createClass({
     ZeroClipboard.config({
       swfPath: '//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.1.6/ZeroClipboard.swf'
     });
-    var client = new ZeroClipboard(this.refs.copy.getDOMNode());
-    client.on( "ready", function( readyEvent ) {
-      console.log( "ZeroClipboard SWF is ready!");
-
-      client.on("aftercopy", function(event) {
-        console.log("Copied text to clipboard: " + event.data["text/plain"]);
-      });
+    new ZeroClipboard(this.refs.sig.getDOMNode());
+    new ZeroClipboard(this.refs.pubKey.getDOMNode());
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
     });
   },
 
@@ -36,10 +37,39 @@ var SigGenerator = React.createClass({
     return '(' + this.state.signatureString + ', ' + this.state.pubKeyString + ')';
   },
 
+  buttonForData: function(data, tooltip, ref) {
+    return <div className='btn-group' role='group'>
+      <button data-toggle='tooltip' data-placement='bottom' title={tooltip} ref={ref} data-clipboard-text={data} type='button' className='btn btn-default'>
+        <span className='glyphicon glyphicon-paperclip' />
+      </button>
+      <button type='button' className='btn btn-default' disabled='disabled'>
+        {truncate(data)}
+      </button>
+    </div>;
+  },
+
   render: function() {
-    return <button ref='copy' data-clipboard-text={this.getData()} onClick={this.generateSignature}>
-      Click to copy (signature, public key) pair
-    </button>;
+    var refreshButtonGroup =
+      <div className='btn-group' role='group'>
+        <button
+            type='button'
+            className='btn btn-default'
+            data-toggle='tooltip'
+            data-placement='bottom'
+            title='Generate a new signature'
+            onClick={this.generateSignature}>
+          <span className='glyphicon glyphicon-refresh' />
+        </button>
+      </div>;
+    var sigButtonGroup = this.buttonForData(this.state.signatureString,
+      'Copy full signature', 'sig');
+    var pubKeyButtonGroup = this.buttonForData(this.state.pubKeyString,
+      'Copy full public key', 'pubKey');
+    return <div className='btn-toolbar' role='toolbar'>
+      {refreshButtonGroup}
+      {sigButtonGroup}
+      {pubKeyButtonGroup}
+    </div>;
   }
 });
 

@@ -19,34 +19,28 @@ var ScriptPlayground = React.createClass({
     this.setState({ code });
   },
 
+  wrap: function(component) {
+    return <div className='row'>
+      <div className='col-md-12'>
+        {component}
+      </div>
+    </div>;
+  },
+
   render: function() {
     var header =
       <div className='page-header'>
         <h1>Script Playground</h1>
       </div>;
 
-    var editor =
-      <div className='row'>
-        <div className='col-md-12'>
+    var editor = this.wrap(
           <CodeMirrorEditor key='script'
                             mode='script'
                             onChange={this.handleCodeChange}
                             className='playgroundStage'
-                            codeText={this.state.code} />
-        </div>
-      </div>;
-
-    var preview =
-      <div className='row'>
-        <div className='col-md-12'>
-          <ComponentPreview code={this.state.code} />
-        </div>
-      </div>;
-
-    var generator =
-      <div className='row'>
-        <SigGenerator />
-      </div>;
+                            codeText={this.state.code} />);
+    var preview = this.wrap(<ComponentPreview code={this.state.code} />);
+    var generator = this.wrap(<SigGenerator />);
 
     var footer =
       <div className='footer'>
