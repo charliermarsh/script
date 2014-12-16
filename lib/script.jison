@@ -3,6 +3,7 @@
 %{
     var beautify = require('js-beautify').js_beautify;
     var base = require('./config.js').base;
+    var ScriptStack = require('./script-stack.js');
 %}
 
 /* lexical grammar */
@@ -95,7 +96,7 @@ expressions
             var js = beautify($1);
             var evaluate = new Function('stack', js);
             return {
-                evaluate: evaluate,
+                value: evaluate(new ScriptStack()),
                 code: js
             };
         %}
