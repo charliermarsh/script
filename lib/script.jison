@@ -130,29 +130,23 @@ opcode
         %}
     | OP_IF nonterm OP_ELSE nonterm OP_ENDIF
         %{
-            var b1 = $nonterm1;
-            var b2 = $nonterm2;
-            $$ = 'if (stack.pop().compare(0) !== 0) {' + b1 + '} else {' + b2 + '};';
+            $$ = 'if (stack.pop().compare(0) !== 0) {' + $nonterm1 + '} else {' + $nonterm2 + '};';
         %}
     | OP_IF nonterm OP_ENDIF
         %{
-            var b1 = $nonterm;
-            $$ = 'if (stack.pop().compare(0) !== 0) {' + b1 + '};';
+            $$ = 'if (stack.pop().compare(0) !== 0) {' + $nonterm + '};';
         %}
     | OP_NOTIF nonterm OP_ELSE nonterm OP_ENDIF
         %{
-            var b1 = $nonterm1;
-            var b2 = $nonterm2;
-            $$ = 'if (stack.pop().equals(0)) {' + b1 + '} else {' + b2 + '};';
+            $$ = 'if (stack.pop().equals(0)) {' + $nonterm1 + '} else {' + $nonterm2 + '};';
         %}
     | OP_NOTIF nonterm OP_ENDIF
         %{
-            var b1 = $nonterm;
-            $$ = 'if (stack.pop().equals(0)) {' + b1 + '};';
+            $$ = 'if (stack.pop().equals(0)) {' + $nonterm + '};';
         %}
     | OP_NOP
         %{
-            $$ = ($0 || '');
+            $$ = '';
         %}
     | OP_FUNCTION
         %{
