@@ -3,6 +3,7 @@ jest.autoMockOff();
 var _ = require('underscore');
 var exec = require('../index.js').evaluate;
 var keyGen = require('../lib/key-gen.js');
+var base = require('../lib/config.js').base;
 
 // Generated offline with key-gen to avoid weird Jest import bug with CoinKey
 var signatures = [
@@ -64,7 +65,7 @@ describe('signing', function() {
             var idx = sigIndices[i];
             script += signatures[idx % signatures.length].signatureString;
         }
-        script += ' ' + sigIndices.length.toString(16);
+        script += ' ' + sigIndices.length.toString(base);
 
         // Add public keys
         for (var i = 0; i < pubKeyIndices.length; i++) {
@@ -74,7 +75,7 @@ describe('signing', function() {
             var idx = pubKeyIndices[i];
             script += signatures[idx % signatures.length].pubKeyString;
         }
-        script += ' ' + pubKeyIndices.length.toString(16);
+        script += ' ' + pubKeyIndices.length.toString(base);
         script += ' OP_CHECKMULTISIG OP_VERIFY';
         return script;
     }
