@@ -54,7 +54,7 @@ OP_([2-9]|1[0-6])\b          { return 'DATA'; }
 "OP_1SUB"                    { return 'OP_FUNCTION'; }
 "OP_NEGATE"                  { return 'OP_FUNCTION'; }
 "OP_ABS"                     { return 'OP_FUNCTION'; }
-"OP_0NOT"                    { return 'OP_FUNCTION'; }
+"OP_NOT"                     { return 'OP_FUNCTION'; }
 "OP_0NOTEQUAL"               { return 'OP_FUNCTION'; }
 "OP_ADD"                     { return 'OP_FUNCTION'; }
 "OP_SUB"                     { return 'OP_FUNCTION'; }

@@ -1,13 +1,15 @@
 var parser = require('./script.js').parser;
 var ScriptStack = require('./script-stack.js');
 
-module.exports = {
+var Interpreter = {
     evaluate: function(input) {
         var stack = new ScriptStack();
         return parser.parse(input).evaluate(stack);
     },
 
     unlock: function(scriptSig, scriptPubKey) {
-        return this.evaluate(scriptSig + ' ' + scriptPubKey);
+        return Interpreter.evaluate(scriptSig + ' ' + scriptPubKey);
     }
 };
+
+module.exports = Interpreter;
