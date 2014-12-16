@@ -3,15 +3,14 @@ var unlock = require('../index.js').unlock;
 
 
 function getPrimes(maxValue) {
-    var isPrime = [];
-    var maxFactor = Math.sqrt(maxValue);
-
     // To start, assume (2, maxValue - 1) are prime
+    var isPrime = [];
     for (var i = 0; i < maxValue; i++) {
         isPrime.push(true);
     }
 
     // Remove prime multiples
+    var maxFactor = Math.sqrt(maxValue);
     for (i = 2; i <= maxFactor; i++) {
         if (isPrime[i]) {
             for (var j = i * i; j < maxValue; j += i) {
