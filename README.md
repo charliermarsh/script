@@ -1,7 +1,7 @@
 script
 ======
 
-JavaScript implementation of Script, Bitcoin's scripting language, along with a Script Playground, deployed [here](http://www.princeton.edu/~crmarsh/script-playground/).
+JavaScript implementation of Script, Bitcoin's scripting language, along with a Script Playground, deployed [here](http://www.crmarsh.com/script-playground/).
 
 ## How It Works
 
@@ -47,7 +47,7 @@ This repository can be roughly split into two parts:
 In its simplest form, usage of (1) might look like the following:
 
 ```js
-var exec = require('./index.js');
+var exec = require('./index.js').evaluate;
 var script = 'OP_0 OP_1ADD OP_VERIFY';
 exec(script);
 ```
