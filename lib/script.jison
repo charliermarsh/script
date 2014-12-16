@@ -85,13 +85,12 @@ OP_([2-9]|1[0-6])\b          { return 'DATA'; }
 %nonassoc OP_ELSE
 %nonassoc OP_ENDIF
 
-%start expressions
+%start script
 
 %% /* language grammar */
 
-expressions
-    : nonterminal expressions
-    | terminal EOF
+script
+    : nonterm EOF
         %{
             var js = beautify($1);
             var evaluate = new Function('stack', js);
@@ -102,19 +101,15 @@ expressions
         %}
     ;
 
-terminal
-    : OP_TERMINAL
+nonterm
+    : opcode
+    | nonterm opcode
         %{
-            $$ = ($0 || '') + 'return stack.' + $1  + '();'
+            $$ = $1 + $2;
         %}
     ;
 
-statement
-    : nonterminal
-    | nonterminal statement
-    ;
-
-nonterminal
+opcode
     : DATA
         %{
             var value;
@@ -127,29 +122,33 @@ nonterminal
             } else {
                 value = $1;
             }
-            $$ = ($0 || '') + 'stack.push("' + value + '");';
+            $$ = 'stack.push("' + value + '");';
         %}
-    | OP_IF statement OP_ELSE statement OP_ENDIF
+    | OP_TERMINAL
         %{
-            var b1 = $statement1.substr('OP_IF'.length);
-            var b2 = $statement2.substr('OP_ELSE'.length);
-            $$ = ($0 || '') + 'if (stack.pop().compare(0) !== 0) {' + b1 + '} else {' + b2 + '};';
+            $$ = 'return stack.' + $1  + '();'
         %}
-    | OP_IF statement OP_ENDIF
+    | OP_IF nonterm OP_ELSE nonterm OP_ENDIF
         %{
-            var b1 = $statement.substr('OP_IF'.length);
-            $$ = ($0 || '') + 'if (stack.pop().compare(0) !== 0) {' + b1 + '};';
+            var b1 = $nonterm1;
+            var b2 = $nonterm2;
+            $$ = 'if (stack.pop().compare(0) !== 0) {' + b1 + '} else {' + b2 + '};';
         %}
-    | OP_NOTIF statement OP_ELSE statement OP_ENDIF
+    | OP_IF nonterm OP_ENDIF
         %{
-            var b1 = $statement1.substr('OP_NOTIF'.length);
-            var b2 = $statement2.substr('OP_ELSE'.length);
-            $$ = ($0 || '') + 'if (stack.pop().equals(0)) {' + b1 + '} else {' + b2 + '};';
+            var b1 = $nonterm;
+            $$ = 'if (stack.pop().compare(0) !== 0) {' + b1 + '};';
         %}
-    | OP_NOTIF statement OP_ENDIF
+    | OP_NOTIF nonterm OP_ELSE nonterm OP_ENDIF
         %{
-            var b1 = $statement.substr('OP_NOTIF'.length);
-            $$ = ($0 || '') + 'if (stack.pop().equals(0)) {' + b1 + '};';
+            var b1 = $nonterm1;
+            var b2 = $nonterm2;
+            $$ = 'if (stack.pop().equals(0)) {' + b1 + '} else {' + b2 + '};';
+        %}
+    | OP_NOTIF nonterm OP_ENDIF
+        %{
+            var b1 = $nonterm;
+            $$ = 'if (stack.pop().equals(0)) {' + b1 + '};';
         %}
     | OP_NOP
         %{
@@ -157,6 +156,6 @@ nonterminal
         %}
     | OP_FUNCTION
         %{
-            $$ = ($0 || '') + 'stack.' + $1  + '();'
+            $$ = 'stack.' + $1  + '();'
         %}
     ;
