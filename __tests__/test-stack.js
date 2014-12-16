@@ -1,7 +1,7 @@
 jest.autoMockOff();
 
 var _ = require('underscore');
-var exec = require('../index.js');
+var exec = require('../index.js').evaluate;
 
 describe('constants', function() {
     it('pushes 2-16 for OP_[2-16]', function() {
