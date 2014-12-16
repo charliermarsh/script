@@ -42,7 +42,7 @@ function isPrime(scriptSig) {
     for (var i = 0; i < primes.length; i++) {
         var commands = [
             'OP_DUP',
-            '0x' + primes[i].toString(16),
+            '0x' + primes[i].toString(base),
             'OP_EQUAL',
         ];
         // If this is not the comparsion, OR with flag
