@@ -1,4 +1,5 @@
-var base = require('../config.js').base;
+var sha256 = require('../lib/crypto.js').sha256;
+var base = require('../lib/config.js').base;
 var unlock = require('../index.js').unlock;
 
 
@@ -30,18 +31,19 @@ function getPrimes(maxValue) {
 };
 
 /*
- * This function only unlocks if the user supplies a four-digit prime number.
+ * This function only unlocks if the user supplies a three-digit prime number.
  */
 function isPrime(scriptSig) {
-    var minValue = 1000;
-    var maxValue = 9999;
+    var minValue = 100;
+    var maxValue = 999;
     var primes = getPrimes(maxValue);
 
     var scriptPubKey = '';
     for (var i = 0; i < primes.length; i++) {
         var commands = [
             'OP_DUP',
-            '0x' + primes[i].toString(base),
+            'OP_SHA256',
+            sha256(primes[i]),
             'OP_EQUAL',
         ];
         // If this is not the comparsion, OR with flag
@@ -64,3 +66,5 @@ function isPrime(scriptSig) {
     scriptPubKey += conclusion.join(' ');
     return unlock(scriptSig, scriptPubKey);
 }
+
+module.exports = isPrime;
