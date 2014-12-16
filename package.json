@@ -2,7 +2,7 @@
   "name": "Script.js",
   "description": "Compile Bitcoin Script to JavaScript.",
   "scripts": {
-    "compile": "./node_modules/.bin/jison script.jison",
+    "compile": "./node_modules/.bin/jison lib/script.jison && mv script.js lib/script.js",
     "bundle": "./node_modules/.bin/browserify index.js -o bundle.js",
     "build": "npm run compile && npm run bundle",
     "test": "jest"
@@ -13,9 +13,7 @@
     "coinkey": "^0.1.0",
     "ecdsa": "^0.6.0",
     "js-beautify": "^1.5.4",
-    "node-rsa": "^0.1.53",
     "ripemd160": "^0.2.0",
-    "rsa-stream": "^1.0.3",
     "secure-random": "^1.1.1",
     "sha1": "^1.1.0",
     "sha256": "^0.1.1"

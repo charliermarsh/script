@@ -1,5 +1,5 @@
-var parser = require('./script.js').parser;
-var ScriptStack = require('./script-stack.js');
+var parser = require('./lib/script').parser;
+var ScriptStack = require('./lib/script-stack');
 
 var Interpreter = {
     evaluate: function(input) {

@@ -2,7 +2,7 @@ jest.autoMockOff();
 
 var _ = require('underscore');
 var exec = require('../index.js').evaluate;
-var keyGen = require('../key-gen.js');
+var keyGen = require('../lib/key-gen.js');
 
 // Generated offline with key-gen to avoid weird Jest import bug with CoinKey
 var signatures = [
