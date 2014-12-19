@@ -1,5 +1,5 @@
 {
-  "name": "Script.js",
+  "name": "bitcoin-script",
   "description": "Compile Bitcoin Script to JavaScript.",
   "scripts": {
     "compile": "./node_modules/.bin/jison src/script.jison && mv script.js src/script.js",
@@ -10,7 +10,7 @@
     "build:all": "npm run compile && npm run transpile:all",
     "build:src": "npm run compile && npm run transpile:src",
     "test": "npm run build:all && jest lib/",
-    "prepublish": "npm run build:src",
+    "prepublish": "npm run clean && npm run build:src && cp *.{json,md} lib/",
     "bundle": "npm run build:src && ./node_modules/.bin/browserify lib/index.js -o bundle.js"
   },
   "dependencies": {
@@ -40,5 +40,7 @@
     "javascript",
     "jison"
   ],
-  "author": "crm416"
+  "author": "crmarsh",
+  "homepage": "crmarsh.com/script/",
+  "version": "0.0.1"
 }
