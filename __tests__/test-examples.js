@@ -1,36 +1,36 @@
 jest.autoMockOff();
 
-var base = require('../lib/config.js').base;
+var { base } = require('../lib/config.js');
 var isPrime = require('../examples/primes.js');
 var lockWithPassword = require('../examples/password.js');
 
-describe('primes', function() {
-    it('accepts a three-digit prime', function() {
+describe('primes', () => {
+    it('accepts a three-digit prime', () => {
         var n = 829;
         var script = '0x' + n.toString(base);
         expect(isPrime(script)).toBe(true);
     });
 
-    it('rejects a three-digit non-prime', function() {
+    it('rejects a three-digit non-prime', () => {
         var n = 830;
         var script = '0x' + n.toString(base);
         expect(isPrime(script)).toBe(false);
     });
 
-    it('rejects a four-digit prime', function() {
+    it('rejects a four-digit prime', () => {
         var n = 9973;
         var script = '0x' + n.toString(base);
         expect(isPrime(script)).toBe(false);
     });
 });
 
-describe('passwords', function() {
-    it('unlocks when provided with the right password', function() {
+describe('passwords', () => {
+    it('unlocks when provided with the right password', () => {
         var password = '15478231';
         expect(lockWithPassword(password)(password)).toBe(true);
     });
 
-    it('does not unlock when provided with the wrong password', function() {
+    it('does not unlock when provided with the wrong password', () => {
         var password = '15478231';
         var guess = '15478232';
         expect(lockWithPassword(password)(guess)).toBe(false);

@@ -1,7 +1,6 @@
-var sha256 = require('../lib/crypto.js').sha256;
-var base = require('../lib/config.js').base;
-var unlock = require('../index.js').unlock;
-
+var { sha256 } = require('../lib/crypto.js');
+var { base } = require('../lib/config.js');
+var { unlock } = require('../index.js');
 
 function getPrimes(maxValue) {
     // To start, assume (2, maxValue - 1) are prime

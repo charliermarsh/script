@@ -1,11 +1,11 @@
-var parser = require('./lib/script').parser;
+var { parser } = require('./lib/script');
 
 var Interpreter = {
-    evaluate: function(input) {
+    evaluate(input) {
         return parser.parse(input).value;
     },
 
-    unlock: function(scriptSig, scriptPubKey) {
+    unlock(scriptSig, scriptPubKey) {
         return Interpreter.evaluate(scriptSig + ' ' + scriptPubKey);
     }
 };
