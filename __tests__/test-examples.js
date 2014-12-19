@@ -4,7 +4,7 @@ var base = require('../lib/config.js').base;
 var isPrime = require('../examples/primes.js');
 var lockWithPassword = require('../examples/password.js');
 
-describe('prime test', function() {
+describe('primes', function() {
     it('accepts a three-digit prime', function() {
         var n = 829;
         var script = '0x' + n.toString(base);
@@ -24,7 +24,7 @@ describe('prime test', function() {
     });
 });
 
-describe('password test', function() {
+describe('passwords', function() {
     it('unlocks when provided with the right password', function() {
         var password = '15478231';
         expect(lockWithPassword(password)(password)).toBe(true);
