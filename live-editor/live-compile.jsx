@@ -1,7 +1,7 @@
 var React = require('react');
 var CodeMirrorEditor = require('./code-mirror-editor.jsx');
 var ValidationBadge = require('./validation-badge.jsx');
-var parser = require('../script.js').parser;
+var parser = require('../src/script.js').parser;
 
 var selfCleaningTimeout = {
   componentDidUpdate: function() {

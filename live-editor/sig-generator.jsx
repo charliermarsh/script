@@ -1,6 +1,6 @@
 var React = require('react');
 var ZeroClipboard = require('zeroclipboard');
-var keyGen = require('../key-gen.js');
+var keyGen = require('../src/key-gen.js');
 
 function truncate(s) {
   return s.substr(0, 6) + '...';
