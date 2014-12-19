@@ -2,6 +2,7 @@ jest.autoMockOff();
 
 var base = require('../lib/config.js').base;
 var isPrime = require('../examples/primes.js');
+var lockWithPassword = require('../examples/password.js');
 
 describe('prime test', function() {
     it('accepts a three-digit prime', function() {
@@ -20,5 +21,18 @@ describe('prime test', function() {
         var n = 9973;
         var script = '0x' + n.toString(base);
         expect(isPrime(script)).toBe(false);
+    });
+});
+
+describe('password test', function() {
+    it('unlocks when provided with the right password', function() {
+        var password = '15478231';
+        expect(lockWithPassword(password)(password)).toBe(true);
+    });
+
+    it('does not unlock when provided with the wrong password', function() {
+        var password = '15478231';
+        var guess = '15478232';
+        expect(lockWithPassword(password)(guess)).toBe(false);
     });
 });
