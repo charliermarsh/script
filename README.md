@@ -1,7 +1,7 @@
 script
 ======
 
-JavaScript implementation of Script, Bitcoin's scripting language, along with a Script Playground, deployed [here](http://www.crmarsh.com/script-playground/).
+JavaScript implementation of Script, Bitcoin's scripting language, along with a Script Playground, deployed [here](http://www.crmarsh.com/script-playground/). The original ES6 source can be found on [GitHub](https://github.com/crm416/script) with the compiled ES5 package available on [npm](https://www.npmjs.com/package/bitcoin-script).
 
 ## How It Works
 
@@ -47,12 +47,12 @@ This repository can be roughly split into two parts:
 In its simplest form, usage of (1) might look like the following:
 
 ```js
-var exec = require('./index.js').evaluate;
+var evaluate = require('./index.js').evaluate;
 var script = 'OP_0 OP_1ADD OP_VERIFY';
-exec(script);
+evaluate(script);
 ```
 
-In this case, `exec` would return `true`. Additional examples can be found in `__tests__/test-stack.js` and `__tests__/test-crypt.js`.
+In this case, `evaluate` would return `true`. Additional examples can be found in `__tests__/test-stack.js` and `__tests__/test-crypt.js`.
 
 If you edit the Jison script, you can re-build the compiler with `npm run compile`. The compiler can also be bundled for usage in the browser with `npm run bundle`, which produces a bundle at `bundle.js`.
 
@@ -60,7 +60,7 @@ If you edit the Jison script, you can re-build the compiler with `npm run compil
 
 To build the live editor, run `make` from the `live-editor` directory, followed by `python -m SimpleHTTPServer`. Once running, you can head to `localhost:8000/script-compiler.html`.
 
-(You will need to run `npm run compile` before you can run the live editor, as the compiler must be generated from the Jison file, but it's unnecessary to bundle it, as the live editor takes care of that.)
+(You will need to run `npm run compile` before you can run the live editor, as the compiler must be generated from the Jison file, but it's unnecessary to bundle it, since the live editor takes care of that.)
 
 ### Testing
 
