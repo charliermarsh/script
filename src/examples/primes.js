@@ -1,5 +1,5 @@
-var { sha256 } = require('../lib/crypto.js');
-var { base } = require('../lib/config.js');
+var { sha256 } = require('../crypto.js');
+var { base } = require('../config.js');
 var { unlock } = require('../index.js');
 
 function getPrimes(maxValue) {

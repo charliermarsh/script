@@ -1,9 +1,9 @@
 jest.autoMockOff();
 
 var _ = require('underscore');
-var { exec } = require('../index.js');
-var { base } = require('../lib/config.js');
-var keyGen = require('../lib/key-gen.js');
+var { evaluate } = require('../index.js');
+var { base } = require('../config.js');
+var keyGen = require('../key-gen.js');
 
 // Generated offline with key-gen to avoid weird Jest import bug with CoinKey
 var signatures = [
@@ -24,12 +24,12 @@ var signatures = [
 describe('hashing', () => {
     it('generates different hashes for different values', () => {
         var script = 'OP_1 OP_HASH256 OP_0 OP_HASH256 OP_EQUAL OP_VERIFY';
-        expect(exec(script)).toBe(false);
+        expect(evaluate(script)).toBe(false);
     });
 
     it('generates the same hash for the same value', () => {
         var script = 'OP_1 OP_HASH256 OP_1 OP_HASH256 OP_EQUAL OP_VERIFY';
-        expect(exec(script)).toBe(true);
+        expect(evaluate(script)).toBe(true);
     });
 });
 
@@ -39,7 +39,7 @@ describe('signing', () => {
      * `numPubKeys` signatures and public keys, wrapping around if `numSigs`
      * or `numPubKeys` is greater than `signatures.length`.
      */
-     g =>enerateMultiSigScript(numSigs, numPubKeys) {
+    var generateMultiSigScript = (numSigs, numPubKeys) => {
         // You can pass in an array of indices, or just a number
         var sigIndices;
         if (typeof numSigs === 'number') {
@@ -88,27 +88,27 @@ describe('signing', () => {
         // Run script
         var script = signatureString + ' ' + pubKeyString +
             ' OP_CHECKSIG OP_VERIFY';
-        expect(exec(script)).toBe(true);
+        expect(evaluate(script)).toBe(true);
     });
 
     it('correctly checks multiple signatures', () => {
         var script = generateMultiSigScript(signatures.length,
             signatures.length);
-        expect(exec(script)).toBe(true);
+        expect(evaluate(script)).toBe(true);
     });
 
     it('fails if there are too few keys', () => {
         var numSigs = 2;
         var numPubKeys = 1;
         var script = generateMultiSigScript(numSigs, numPubKeys);
-        expect(exec(script)).toBe(false);
+        expect(evaluate(script)).toBe(false);
     });
 
     it('accepts too many keys', () => {
         var numSigs = signatures.length;
         var numPubKeys = 2 * numSigs + 1;
         var script = generateMultiSigScript(numSigs, numPubKeys);
-        expect(exec(script)).toBe(true);
+        expect(evaluate(script)).toBe(true);
     });
 
     it('fails if keys are in the wrong order', () => {
@@ -121,6 +121,6 @@ describe('signing', () => {
         }
 
         var script = generateMultiSigScript(numSigs, pubKeyIndices);
-        expect(exec(script)).toBe(false);
+        expect(evaluate(script)).toBe(false);
     });
 });

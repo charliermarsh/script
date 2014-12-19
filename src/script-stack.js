@@ -9,61 +9,69 @@ function StackEmptyException() {
     };
 }
 
-var ScriptStack = function() {
-    var serialize = (data) => {
-        return data.toString(config.base);
-    };
-    var deserialize = (data) => {
-        return bigInt(data, config.base);
-    };
+var serialize = (data) => {
+    return data.toString(config.base);
+};
+var deserialize = (data) => {
+    return bigInt(data, config.base);
+};
+
+class ScriptStack {
+    constructor() { }
 
     // Basic array operations
-    this.push = () => {
+    push() {
         var serialized = [].map.call(arguments, serialize);
         return Array.prototype.push.apply(this, serialized);
-    };
-    this.pop = () => {
+    }
+    pop() {
         if (this.length === 0 || this.length == null) {
             throw new StackEmptyException();
         }
         return deserialize(Array.prototype.pop.apply(this));
-    };
-    this.peek = () => {
+    }
+    peek() {
         var value = this.pop();
         this.push(value);
         return value;
-    };
+    }
 
     // Constants
-    this.OP_0 = () => {
+    OP_0() {
         this.push(0);
-    };
-    this.OP_FALSE = this.OP_0;
-    this.OP_1NEGATE = () => {
+    }
+    OP_FALSE() {
+        this.OP_0();
+    }
+    OP_1NEGATE() {
         this.OP_1();
         this.OP_NEGATE();
-    };
-    this.OP_1 = () => {
+    }
+    OP_1() {
         this.push(1);
-    };
-    this.OP_TRUE = this.OP_1;
+    }
+    OP_TRUE() {
+        this.OP_1();
+    }
 
     // Stack operations
-    this.OP_IFDUP = () => {
+    OP_IFDUP() {
         var top = this.peek();
         if (top.compare(0) !== 0) {
             this.push(top);
         }
-    };
-    this.OP_DEPTH = () => {
+    }
+    OP_DEPTH() {
         this.push(this.length);
-    };
-    this.OP_DROP = this.pop;
-    this.OP_2DROP = () => {
+    }
+    OP_DROP() {
+        this.pop();
+    }
+    OP_2DROP() {
         this.OP_DROP();
         this.OP_DROP();
-    };
-    this.OP_DUP = (n) => {
+    }
+    OP_DUP(n) {
         n = n || 1;
 
         // Extract top `n` values
@@ -76,25 +84,25 @@ var ScriptStack = function() {
         for (var i = 0; i < 2 * n; i++) {
             this.push(values[i % values.length]);
         }
-    };
-    this.OP_2DUP = () => {
+    }
+    OP_2DUP() {
         this.OP_DUP(2);
-    };
-    this.OP_3DUP = () => {
+    }
+    OP_3DUP() {
         this.OP_DUP(3);
-    };
-    this.OP_NIP = () => {
+    }
+    OP_NIP() {
         var top = this.pop();
         this.pop();
         this.push(top);
-    };
-    this.OP_OVER = () => {
+    }
+    OP_OVER() {
         var top = this.pop();
         var bottom = this.peek();
         this.push(top);
         this.push(bottom);
-    };
-    this.OP_PICK = () => {
+    }
+    OP_PICK() {
         var n = this.pop();
         var temp = [];
         for (var i = 0; i < n - 1; i++) {
@@ -105,8 +113,8 @@ var ScriptStack = function() {
             this.push(temp[i]);
         }
         this.push(nth);
-    };
-    this.OP_ROLL = () => {
+    }
+    OP_ROLL() {
         var n = this.pop();
         var temp = [];
         for (var i = 0; i < n - 1; i++) {
@@ -117,51 +125,51 @@ var ScriptStack = function() {
             this.push(temp[i]);
         }
         this.push(nth);
-    };
-    this.OP_ROT = () => {
+    }
+    OP_ROT() {
         var values = [this.pop(), this.pop(), this.pop()];
         values.reverse();
         for (var i = 0; i < values.length; i++) {
             this.push(values[(i + 1) % values.length]);
         }
-    };
-    this.OP_SWAP = () => {
+    }
+    OP_SWAP() {
         var values = [this.pop(), this.pop()];
         for (var i = 0; i < values.length; i++) {
             this.push(values[i]);
         }
-    };
-    this.OP_TUCK = () => {
+    }
+    OP_TUCK() {
         var values = [this.pop(), this.pop()];
         values.reverse();
         for (var i = 0; i < values.length + 1; i++) {
             this.push(values[i % values.length]);
         }
-    };
-    this.OP_2OVER = () => {
+    }
+    OP_2OVER() {
         var values = [this.pop(), this.pop(), this.pop(), this.pop()];
         values.reverse();
         for (var i = 0; i < values.length + 2; i++) {
             this.push(values[i % values.length]);
         }
-    };
-    this.OP_2ROT = () => {
+    }
+    OP_2ROT() {
         var values = [this.pop(), this.pop(), this.pop(), this.pop(), this.pop(), this.pop()];
         values.reverse();
         for (var i = 0; i < values.length; i++) {
             this.push(values[(i + 2) % values.length]);
         }
-    };
-    this.OP_2SWAP = () => {
+    }
+    OP_2SWAP() {
         var values = [this.pop(), this.pop(), this.pop(), this.pop()];
         values.reverse();
         for (var i = 0; i < values.length; i++) {
             this.push(values[(i + 2) % values.length]);
         }
-    };
+    }
 
     // Bitwise logic
-    this.OP_EQUAL = () => {
+    OP_EQUAL() {
         var b = this.pop();
         var a = this.pop();
         if (a.equals(b)) {
@@ -169,46 +177,46 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
+    }
 
     // Artithmetic operations
-    this.OP_1ADD = () => {
+    OP_1ADD() {
         this.push(this.pop().add(1));
-    };
-    this.OP_1SUB = () => {
+    }
+    OP_1SUB() {
         this.push(this.pop().minus(1));
-    };
-    this.OP_NEGATE = () => {
+    }
+    OP_NEGATE() {
         this.push(this.pop().multiply(-1));
-    };
-    this.OP_ABS = () => {
+    }
+    OP_ABS() {
         this.push(this.pop().abs());
-    };
-    this.OP_NOT = () => {
+    }
+    OP_NOT() {
         if (this.pop().equals(0)) {
             this.OP_1();
         } else {
             this.OP_0();
         }
-    };
-    this.OP_0NOTEQUAL = () => {
+    }
+    OP_0NOTEQUAL() {
         if (this.pop().equals(0)) {
             this.OP_0();
         } else {
             this.OP_1();
         }
-    };
-    this.OP_ADD = () => {
+    }
+    OP_ADD() {
         var b = this.pop();
         var a = this.pop();
         this.push(a.add(b));
-    };
-    this.OP_SUB = () => {
+    }
+    OP_SUB() {
         var b = this.pop();
         var a = this.pop();
         this.push(a.minus(b));
-    };
-    this.OP_BOOLAND = () => {
+    }
+    OP_BOOLAND() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(0) !== 0 && b.compare(0) !== 0) {
@@ -216,8 +224,8 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_BOOLOR = () => {
+    }
+    OP_BOOLOR() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(0) !== 0 || b.compare(0) !== 0) {
@@ -225,9 +233,11 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_NUMEQUAL = this.OP_EQUAL;
-    this.OP_NUMNOTEQUAL = () => {
+    }
+    OP_NUMEQUAL() {
+        this.OP_EQUAL();
+    }
+    OP_NUMNOTEQUAL() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(b) !== 0) {
@@ -235,8 +245,8 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_LESSTHAN = () => {
+    }
+    OP_LESSTHAN() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(b) < 0) {
@@ -244,8 +254,8 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_GREATERTHAN = () => {
+    }
+    OP_GREATERTHAN() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(b) > 0) {
@@ -253,8 +263,8 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_LESSTHANOREQUAL = () => {
+    }
+    OP_LESSTHANOREQUAL() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(b) <= 0) {
@@ -262,8 +272,8 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_GREATERTHANOREQUAL = () => {
+    }
+    OP_GREATERTHANOREQUAL() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(b) >= 0) {
@@ -271,8 +281,8 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_MIN = () => {
+    }
+    OP_MIN() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(b) <= 0) {
@@ -280,8 +290,8 @@ var ScriptStack = function() {
         } else {
             this.push(b);
         }
-    };
-    this.OP_MAX = () => {
+    }
+    OP_MAX() {
         var b = this.pop();
         var a = this.pop();
         if (a.compare(b) >= 0) {
@@ -289,8 +299,8 @@ var ScriptStack = function() {
         } else {
             this.push(b);
         }
-    };
-    this.OP_WITHIN = () => {
+    }
+    OP_WITHIN() {
         var max = this.pop();
         var min = this.pop();
         var x = this.pop();
@@ -299,25 +309,25 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
+    }
 
     // Crypto
-    this.OP_RIPEMD160 = () => {
+    OP_RIPEMD160() {
         this.push(crypto.ripemd160(this.pop()));
-    };
-    this.OP_SHA1 = () => {
+    }
+    OP_SHA1() {
         this.push(crypto.sha1(this.pop()));
-    };
-    this.OP_SHA256 = () => {
+    }
+    OP_SHA256() {
         this.push(crypto.sha256(this.pop()));
-    };
-    this.OP_HASH160 = () => {
+    }
+    OP_HASH160() {
         this.push(crypto.ripemd160(crypto.sha256(this.pop())));
-    };
-    this.OP_HASH256 = () => {
+    }
+    OP_HASH256() {
         this.push(crypto.sha256(crypto.sha256(this.pop())));
-    };
-    this.OP_CHECKSIG = () => {
+    }
+    OP_CHECKSIG() {
         // Parse public key
         var pubKey = crypto.processPubKey(this.pop());
 
@@ -330,8 +340,8 @@ var ScriptStack = function() {
         } else {
             this.OP_0();
         }
-    };
-    this.OP_CHECKMULTISIG = () => {
+    }
+    OP_CHECKMULTISIG() {
         // Extract public keys
         var numPubKeys = this.pop();
         var pubKeys = [];
@@ -379,27 +389,27 @@ var ScriptStack = function() {
 
         // If all checks passed, push `true`
         this.OP_1();
-    };
+    }
 
     // Terminals
-    this.OP_VERIFY = () => {
+    OP_VERIFY() {
         return (this.pop().compare(0) !== 0);
-    };
-    this.OP_EQUALVERIFY = () => {
+    }
+    OP_EQUALVERIFY() {
         this.OP_EQUAL();
         return this.OP_VERIFY();
-    };
-    this.OP_CHECKSIGVERIFY = () => {
+    }
+    OP_CHECKSIGVERIFY() {
         this.OP_CHECKSIG();
         return this.OP_VERIFY();
-    };
-    this.OP_CHECKMULTISIGVERIFY = () => {
+    }
+    OP_CHECKMULTISIGVERIFY() {
         this.OP_CHECKMULTISIG();
         return this.OP_VERIFY();
-    };
-    this.OP_RETURN = () => {
+    }
+    OP_RETURN() {
         return false;
-    };
+    }
 };
 
 module.exports = ScriptStack;
