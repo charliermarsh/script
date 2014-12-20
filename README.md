@@ -16,7 +16,7 @@ evaluate(script);
 // => true
 ```
 
-Alternatively, you can use the lock-unlock paradigm:
+Alternatively, you can use the lock-unlock paradigm, which concatenates the scripts before evaluating:
 
 ```js
 var unlock = require('bitcoin-script').unlock;
@@ -34,9 +34,9 @@ Script programs are compiled to JavaScript using [Jison](http://zaach.github.io/
 
 The live editor is based off of [Joel Burget's](http://joelburget.com/) [react-live-editor](https://github.com/joelburget/react-live-editor/).
 
-## Core Behavior
+## Functionality
 
-(A longer explanation of Script and this explanation can be found in my [blog post](crmarsh.com/script/).)
+(A longer explanation of Script and this implementation can be found in my [blog post](crmarsh.com/script/).)
 
 Script is a stack-based programming language; that is, it operates by maintaining a stack onto/from which it pushes/pops as necessary. It is an intentionally simple language, containing if-statements, but no other control flow. The standard library includes functions for performing basic arithmetic and cryptographic operations, all of which can be found on the [Wiki](https://en.bitcoin.it/wiki/Script).
 
@@ -65,13 +65,11 @@ Operations labeled as _Disabled_ are not implemented.
 
 This repository also includes a live Script editor for use in the browser.
 
-To build the live editor, run `make` from the `live-editor` directory, followed by `python -m SimpleHTTPServer`. Once running, you can head to `localhost:8000/script-compiler.html`.
-
-(You will need to run `npm run compile` before you can run the live editor, as the compiler must be generated from the Jison file, but it's unnecessary to bundle it, since the live editor takes care of that.)
+To build the live editor, run `make` from the `live-editor` directory, followed by `python -m SimpleHTTPServer`. Once running, you can head to `localhost:8000/script-compiler.html`. The live editor's build step will take care of ES6ifying and bundling for the browser.
 
 ## Testing
 
-Unit tests can be run with `npm run test`, which will execute the [Jest](https://facebook.github.io/jest/) test runner.
+Unit tests can be run with `npm run test`, which will execute the [Jest](https://facebook.github.io/jest/) test runner. Note that the cryptographic and primality-based tests can take a while (30+ seconds) to run.
 
 ## License
 
