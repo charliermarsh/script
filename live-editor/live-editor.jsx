@@ -57,6 +57,7 @@ var ScriptPlayground = React.createClass({
         {header}
         {editor}
         {preview}
+        <div style={{marginTop: 5}} />
         {generator}
       </div>
       {footer}
