@@ -6,7 +6,9 @@ CodeMirror.defineSimpleMode('script', {
   start: [
     // The regex matches the token, the token property contains the type
     {regex: /([0-9]|[A-F]|[a-f])+\b/, token: 'number'},
-    {regex: /OP\_(.+)\b/, token: 'variable'}
+    {regex: /OP\_(IF|ENDIF|ELSE|NOTIF)\b/, token: 'keyword'},
+    {regex: /OP\_(VERIFY|EQUALVERIFY|RETURN|CHECKSIGVERIFY|CHECKMULTISIGVERIFY)\b/, token: 'keyword'},
+    {regex: /OP\_(.+?)\b/, token: 'variable'},
   ]
 });
 

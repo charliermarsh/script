@@ -46,8 +46,7 @@ var ScriptPlayground = React.createClass({
       <div className='footer'>
         <div className='container-fluid' style={{textAlign: 'center'}}>
           <p style={{margin: 5}}>
-            Created by <a target='_blank' href='http://crmarsh.com/'>Charlie Marsh</a>.
-            See my <a target='_blank' href='http://crmarsh.com/script/'>blog post</a> for more.
+            Created by <a target='_blank' href='http://crmarsh.com/script/'>Charlie Marsh</a>.
             Source available on <a target='_blank' href='https://www.github.com/crm416/script'>GitHub</a> and <a target='_blank' href='https://www.npmjs.com/package/bitcoin-script'>npm</a>.
           </p>
         </div>
