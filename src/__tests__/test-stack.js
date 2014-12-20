@@ -217,13 +217,18 @@ describe('arithmetic', () => {
 });
 
 describe('format', () => {
-    it('allows programs to end without a return', () => {
-        var script = 'OP_1 OP_2';
-        expect(evaluate(script)).toBe(undefined);
-    });
-
-    it('allows extra nonterminal statements', () => {
+it('allows extra nonterminal statements', () => {
         var script = 'OP_1 OP_VERIFY OP_2';
         expect(evaluate(script)).toBe(true);
-    })
+    });
+
+    it('adds an OP_VERIFY and succeeds', () => {
+        var script = 'OP_1';
+        expect(evaluate(script)).toBe(true);
+    });
+
+    it('adds an OP_VERIFY and fails', () => {
+        var script = 'OP_1 OP_1SUB';
+        expect(evaluate(script)).toBe(false);
+    });
 });

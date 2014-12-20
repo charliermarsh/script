@@ -94,6 +94,14 @@ script
         %{
             var js = beautify($1);
             var evaluate = new Function('stack', js);
+
+            // If the script is non-terminating, add an OP_VERIFY at the end
+            var terminates = evaluate(new ScriptStack()) != null;
+            if (!terminates) {
+                js = beautify($1 + '; return stack.OP_VERIFY();');
+                evaluate = new Function('stack', js);
+            }
+
             return {
                 value: evaluate(new ScriptStack()),
                 code: js

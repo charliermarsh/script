@@ -16,6 +16,8 @@ evaluate(script);
 // => true
 ```
 
+(Note: here, `OP_VERIFY` could be excluded, as default behavior is to check for a 1 on the top of the stack if there's no terminating command in the script.)
+
 Alternatively, you can use the lock-unlock paradigm, which concatenates the scripts before evaluating:
 
 ```js
