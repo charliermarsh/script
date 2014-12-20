@@ -1,8 +1,9 @@
 var React = require('react');
 
 var CodeMirrorEditor = require('./code-mirror-editor.jsx');
-var ComponentPreview = require('./live-compile.jsx');
+var LiveCompiler = require('./live-compiler.jsx');
 var SigGenerator = require('./sig-generator.jsx');
+var Permalink = require('./permalink.jsx');
 
 var ScriptPlayground = React.createClass({
   propTypes: {
@@ -28,20 +29,19 @@ var ScriptPlayground = React.createClass({
   },
 
   render: function() {
+    var save = <Permalink style={{marginTop: -7}} code={this.state.code} />
     var header =
       <div className='page-header'>
-        <h1>Script Playground</h1>
+        <h1>Script Playground {save}</h1>
       </div>;
-
     var editor = this.wrap(
           <CodeMirrorEditor key='script'
                             mode='script'
                             onChange={this.handleCodeChange}
                             className='playgroundStage'
                             codeText={this.state.code} />);
-    var preview = this.wrap(<ComponentPreview code={this.state.code} />);
+    var preview = this.wrap(<LiveCompiler code={this.state.code} />);
     var generator = this.wrap(<SigGenerator />);
-
     var footer =
       <div className='footer'>
         <div className='container-fluid' style={{textAlign: 'center'}}>

@@ -1,6 +1,7 @@
 var React = require('react');
 var ZeroClipboard = require('zeroclipboard');
 var keyGen = require('../src/key-gen.js');
+var HoverButton = require('./hover-button.jsx');
 
 function truncate(s) {
   return s.substr(0, 6) + '...';
@@ -39,9 +40,9 @@ var SigGenerator = React.createClass({
 
   buttonForData: function(data, tooltip, ref) {
     return <div className='btn-group' role='group'>
-      <button data-toggle='tooltip' data-placement='bottom' title={tooltip} ref={ref} data-clipboard-text={data} type='button' className='btn btn-default'>
+      <HoverButton data-clipboard-text={data} data-toggle='tooltip' data-placement='bottom' ref={ref} title={tooltip} type='button' className='btn btn-default'>
         <span className='glyphicon glyphicon-paperclip' />
-      </button>
+      </HoverButton>
       <button type='button' className='btn btn-default' disabled='disabled'>
         {truncate(data)}
       </button>

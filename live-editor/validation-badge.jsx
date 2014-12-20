@@ -5,7 +5,7 @@ function classForValidity(isValid) {
 }
 
 function textForValidity(isValid) {
-    return isValid ? 'Valid' : 'Invalid';
+    return isValid ? '✓' : '✖';
 }
 
 var ValidationBadge = React.createClass({
@@ -15,7 +15,13 @@ var ValidationBadge = React.createClass({
 
   render: function() {
     var className = 'label ' + classForValidity(this.props.isValid);
-    return <span className={className}>
+    var style = {
+      position: 'absolute',
+      right: 20,
+      bottom: 5,
+      fontSize: 18
+    };
+    return <span className={className} style={style}>
       {textForValidity(this.props.isValid)}
     </span>
   }
