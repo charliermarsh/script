@@ -10,7 +10,7 @@
     "build:all": "npm run compile && npm run transpile:all",
     "build:src": "npm run compile && npm run transpile:src",
     "test": "npm run build:all && jest lib/",
-    "copy": "cp npm-package.json lib/package.json && cp README.md lib/README.md",
+    "copy": "cp npm-package.json lib/package.json && cp npm-README.md lib/README.md",
     "prepublish": "npm run clean && npm run build:src && npm run copy"
   },
   "dependencies": {
@@ -42,5 +42,5 @@
   ],
   "author": "crmarsh",
   "homepage": "crmarsh.com/script/",
-  "version": "0.0.2"
+  "version": "0.0.3"
 }
