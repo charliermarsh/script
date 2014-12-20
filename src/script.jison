@@ -138,19 +138,19 @@ opcode
         %}
     | OP_IF nonterm OP_ELSE nonterm OP_ENDIF
         %{
-            $$ = 'if (stack.pop().compare(0) !== 0) {' + $nonterm1 + '} else {' + $nonterm2 + '};';
+            $$ = 'if (stack.pop().compare(0) !== 0) {' + $nonterm1 + '} else {' + $nonterm2 + '}';
         %}
     | OP_IF nonterm OP_ENDIF
         %{
-            $$ = 'if (stack.pop().compare(0) !== 0) {' + $nonterm + '};';
+            $$ = 'if (stack.pop().compare(0) !== 0) {' + $nonterm + '}';
         %}
     | OP_NOTIF nonterm OP_ELSE nonterm OP_ENDIF
         %{
-            $$ = 'if (stack.pop().equals(0)) {' + $nonterm1 + '} else {' + $nonterm2 + '};';
+            $$ = 'if (stack.pop().equals(0)) {' + $nonterm1 + '} else {' + $nonterm2 + '}';
         %}
     | OP_NOTIF nonterm OP_ENDIF
         %{
-            $$ = 'if (stack.pop().equals(0)) {' + $nonterm + '};';
+            $$ = 'if (stack.pop().equals(0)) {' + $nonterm + '}';
         %}
     | OP_NOP
         %{

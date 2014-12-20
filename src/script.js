@@ -128,22 +128,22 @@ case 5:
 break;
 case 6:
 
-            this.$ = 'if (stack.pop().compare(0) !== 0) {' + $$[$0-3] + '} else {' + $$[$0-1] + '};';
+            this.$ = 'if (stack.pop().compare(0) !== 0) {' + $$[$0-3] + '} else {' + $$[$0-1] + '}';
         
 break;
 case 7:
 
-            this.$ = 'if (stack.pop().compare(0) !== 0) {' + $$[$0-1] + '};';
+            this.$ = 'if (stack.pop().compare(0) !== 0) {' + $$[$0-1] + '}';
         
 break;
 case 8:
 
-            this.$ = 'if (stack.pop().equals(0)) {' + $$[$0-3] + '} else {' + $$[$0-1] + '};';
+            this.$ = 'if (stack.pop().equals(0)) {' + $$[$0-3] + '} else {' + $$[$0-1] + '}';
         
 break;
 case 9:
 
-            this.$ = 'if (stack.pop().equals(0)) {' + $$[$0-1] + '};';
+            this.$ = 'if (stack.pop().equals(0)) {' + $$[$0-1] + '}';
         
 break;
 case 10:
