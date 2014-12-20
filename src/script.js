@@ -91,7 +91,7 @@ case 1:
             // If the script is non-terminating, add an OP_VERIFY at the end
             var terminates = evaluate(new ScriptStack()) != null;
             if (!terminates) {
-                js = beautify($$[$0-1] + '; return stack.OP_VERIFY();');
+                js = beautify($$[$0-1] + 'return stack.OP_VERIFY();');
                 evaluate = new Function('stack', js);
             }
 
