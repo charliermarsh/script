@@ -217,7 +217,7 @@ describe('arithmetic', () => {
 });
 
 describe('format', () => {
-it('allows extra nonterminal statements', () => {
+    it('allows extra nonterminal statements', () => {
         var script = 'OP_1 OP_VERIFY OP_2';
         expect(evaluate(script)).toBe(true);
     });

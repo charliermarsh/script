@@ -5,7 +5,7 @@ var crypto = require('./crypto.js');
 
 function StackEmptyException() {
     this.toString = () => {
-      return 'Attempted to pop from an empty stack.';
+        return 'Attempted to pop from an empty stack.';
     };
 }
 
@@ -169,6 +169,18 @@ class ScriptStack {
     }
 
     // Bitwise logic
+    OP_INVERT() {
+        this.push(this.pop().not());
+    }
+    OP_AND() {
+        this.push(this.pop().and(this.pop()));
+    }
+    OP_OR() {
+        this.push(this.pop().or(this.pop()));
+    }
+    OP_XOR() {
+        this.push(this.pop().xor(this.pop()));
+    }
     OP_EQUAL() {
         var b = this.pop();
         var a = this.pop();
@@ -185,6 +197,12 @@ class ScriptStack {
     }
     OP_1SUB() {
         this.push(this.pop().minus(1));
+    }
+    OP_2MUL() {
+        this.push(this.pop().multiply(2));
+    }
+    OP_2DIV() {
+        this.push(this.pop().divide(2));
     }
     OP_NEGATE() {
         this.push(this.pop().multiply(-1));
@@ -215,6 +233,29 @@ class ScriptStack {
         var b = this.pop();
         var a = this.pop();
         this.push(a.minus(b));
+    }
+    OP_MUL() {
+        this.push(this.pop().multiply(this.pop()));
+    }
+    OP_DIV() {
+        var divisor = this.pop();
+        var dividend = this.pop();
+        this.push(dividend.divide(divisor));
+    }
+    OP_MOD() {
+        var divisor = this.pop();
+        var dividend = this.pop();
+        this.push(dividend.mod(divisor));
+    }
+    OP_LSHIFT() {
+        var numBits = this.pop();
+        var value = this.pop();
+        this.push(value.shiftLeft(numBits));
+    }
+    OP_RSHIFT() {
+        var numBits = this.pop();
+        var value = this.pop();
+        this.push(value.shiftRight(numBits));
     }
     OP_BOOLAND() {
         var b = this.pop();

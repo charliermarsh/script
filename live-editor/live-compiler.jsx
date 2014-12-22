@@ -1,7 +1,7 @@
 var React = require('react');
 var CodeMirrorEditor = require('./code-mirror-editor.jsx');
 var ValidationBadge = require('./validation-badge.jsx');
-var parser = require('../src/script.js').parser;
+var parser = require('../src/index.js');
 
 var selfCleaningTimeout = {
   componentDidUpdate: function() {
@@ -38,7 +38,7 @@ var ComponentPreview = React.createClass({
     },
 
     parseCode: function() {
-      return parser.parse(this.props.code);
+      return parser.parse(this.props.code, /* enableDisabled */ true);
     },
 
     executeCode: function() {

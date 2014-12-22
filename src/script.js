@@ -760,12 +760,34 @@ case 60: return 14;
 break;
 case 61: return 14; 
 break;
-case 62: return 5; 
+case 62: return 14; 
+break;
+case 63: return 14; 
+break;
+case 64: return 14; 
+break;
+case 65: return 14; 
+break;
+case 66: return 14; 
+break;
+case 67: return 14; 
+break;
+case 68: return 14; 
+break;
+case 69: return 14; 
+break;
+case 70: return 14; 
+break;
+case 71: return 14; 
+break;
+case 72: return 14; 
+break;
+case 73: return 5; 
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:(0x)?([0-9]|[A-F]|[a-f])+\b)/,/^(?:OP_0\b)/,/^(?:OP_FALSE\b)/,/^(?:OP_1NEGATE\b)/,/^(?:OP_1\b)/,/^(?:OP_TRUE\b)/,/^(?:OP_([2-9]|1[0-6])\b)/,/^(?:OP_NOP\b)/,/^(?:OP_IF\b)/,/^(?:OP_NOTIF\b)/,/^(?:OP_ELSE\b)/,/^(?:OP_ENDIF\b)/,/^(?:OP_VERIFY\b)/,/^(?:OP_RETURN\b)/,/^(?:OP_EQUALVERIFY\b)/,/^(?:OP_CHECKSIGVERIFY\b)/,/^(?:OP_CHECKMULTISIGVERIFY\b)/,/^(?:OP_IFDUP\b)/,/^(?:OP_DEPTH\b)/,/^(?:OP_DROP\b)/,/^(?:OP_DUP\b)/,/^(?:OP_NIP\b)/,/^(?:OP_OVER\b)/,/^(?:OP_PICK\b)/,/^(?:OP_ROLL\b)/,/^(?:OP_ROT\b)/,/^(?:OP_SWAP\b)/,/^(?:OP_TUCK\b)/,/^(?:OP_2DROP\b)/,/^(?:OP_2DUP\b)/,/^(?:OP_3DUP\b)/,/^(?:OP_2OVER\b)/,/^(?:OP_2ROT\b)/,/^(?:OP_2SWAP\b)/,/^(?:OP_EQUAL\b)/,/^(?:OP_1ADD\b)/,/^(?:OP_1SUB\b)/,/^(?:OP_NEGATE\b)/,/^(?:OP_ABS\b)/,/^(?:OP_NOT\b)/,/^(?:OP_0NOTEQUAL\b)/,/^(?:OP_ADD\b)/,/^(?:OP_SUB\b)/,/^(?:OP_BOOLAND\b)/,/^(?:OP_BOOLOR\b)/,/^(?:OP_NUMEQUAL\b)/,/^(?:OP_NUMNOTEQUAL\b)/,/^(?:OP_LESSTHAN\b)/,/^(?:OP_GREATERTHAN\b)/,/^(?:OP_LESSTHANOREQUAL\b)/,/^(?:OP_GREATERTHANOREQUAL\b)/,/^(?:OP_MIN\b)/,/^(?:OP_MAX\b)/,/^(?:OP_WITHIN\b)/,/^(?:OP_RIPEMD160\b)/,/^(?:OP_SHA1\b)/,/^(?:OP_SHA256\b)/,/^(?:OP_HASH160\b)/,/^(?:OP_HASH256\b)/,/^(?:OP_CHECKSIG\b)/,/^(?:OP_CHECKMULTISIG\b)/,/^(?:$)/],
-conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62],"inclusive":true}}
+rules: [/^(?:\s+)/,/^(?:(0x)?([0-9]|[A-F]|[a-f])+\b)/,/^(?:OP_0\b)/,/^(?:OP_FALSE\b)/,/^(?:OP_1NEGATE\b)/,/^(?:OP_1\b)/,/^(?:OP_TRUE\b)/,/^(?:OP_([2-9]|1[0-6])\b)/,/^(?:OP_NOP\b)/,/^(?:OP_IF\b)/,/^(?:OP_NOTIF\b)/,/^(?:OP_ELSE\b)/,/^(?:OP_ENDIF\b)/,/^(?:OP_VERIFY\b)/,/^(?:OP_RETURN\b)/,/^(?:OP_EQUALVERIFY\b)/,/^(?:OP_CHECKSIGVERIFY\b)/,/^(?:OP_CHECKMULTISIGVERIFY\b)/,/^(?:OP_IFDUP\b)/,/^(?:OP_DEPTH\b)/,/^(?:OP_DROP\b)/,/^(?:OP_DUP\b)/,/^(?:OP_NIP\b)/,/^(?:OP_OVER\b)/,/^(?:OP_PICK\b)/,/^(?:OP_ROLL\b)/,/^(?:OP_ROT\b)/,/^(?:OP_SWAP\b)/,/^(?:OP_TUCK\b)/,/^(?:OP_2DROP\b)/,/^(?:OP_2DUP\b)/,/^(?:OP_3DUP\b)/,/^(?:OP_2OVER\b)/,/^(?:OP_2ROT\b)/,/^(?:OP_2SWAP\b)/,/^(?:OP_INVERT\b)/,/^(?:OP_AND\b)/,/^(?:OP_OR\b)/,/^(?:OP_XOR\b)/,/^(?:OP_EQUAL\b)/,/^(?:OP_1ADD\b)/,/^(?:OP_1SUB\b)/,/^(?:OP_2MUL\b)/,/^(?:OP_2DIV\b)/,/^(?:OP_NEGATE\b)/,/^(?:OP_ABS\b)/,/^(?:OP_NOT\b)/,/^(?:OP_0NOTEQUAL\b)/,/^(?:OP_ADD\b)/,/^(?:OP_SUB\b)/,/^(?:OP_MUL\b)/,/^(?:OP_DIV\b)/,/^(?:OP_MOD\b)/,/^(?:OP_LSHIFT\b)/,/^(?:OP_RSHIFT\b)/,/^(?:OP_BOOLAND\b)/,/^(?:OP_BOOLOR\b)/,/^(?:OP_NUMEQUAL\b)/,/^(?:OP_NUMNOTEQUAL\b)/,/^(?:OP_LESSTHAN\b)/,/^(?:OP_GREATERTHAN\b)/,/^(?:OP_LESSTHANOREQUAL\b)/,/^(?:OP_GREATERTHANOREQUAL\b)/,/^(?:OP_MIN\b)/,/^(?:OP_MAX\b)/,/^(?:OP_WITHIN\b)/,/^(?:OP_RIPEMD160\b)/,/^(?:OP_SHA1\b)/,/^(?:OP_SHA256\b)/,/^(?:OP_HASH160\b)/,/^(?:OP_HASH256\b)/,/^(?:OP_CHECKSIG\b)/,/^(?:OP_CHECKMULTISIG\b)/,/^(?:$)/],
+conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73],"inclusive":true}}
 });
 return lexer;
 })();

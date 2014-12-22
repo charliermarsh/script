@@ -1,12 +1,21 @@
 var { parser } = require('./script.js');
+var Validator = require('./validator.js');
 
 var Interpreter = {
-    evaluate(input) {
-        return parser.parse(input).value;
+    parse(input, allowDisabled) {
+        if (!allowDisabled && Validator.includesDisabledOpcode(input)) {
+            throw new Validator.DisabledOpcodeException(input);
+        }
+
+        return parser.parse(input);
     },
 
-    unlock(scriptSig, scriptPubKey) {
-        return Interpreter.evaluate(scriptSig + ' ' + scriptPubKey);
+    evaluate(input, allowDisabled) {
+        return Interpreter.parse(input, allowDisabled).value;
+    },
+
+    unlock(scriptSig, scriptPubKey, allowDisabled) {
+        return Interpreter.evaluate(scriptSig + ' ' + scriptPubKey, allowDisabled);
     }
 };
 

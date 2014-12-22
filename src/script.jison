@@ -49,16 +49,27 @@ OP_([2-9]|1[0-6])\b          { return 'DATA'; }
 "OP_2ROT"                    { return 'OP_FUNCTION'; }
 "OP_2SWAP"                   { return 'OP_FUNCTION'; }
 /* Bitwise logic */
+"OP_INVERT"                  { return 'OP_FUNCTION'; }
+"OP_AND"                     { return 'OP_FUNCTION'; }
+"OP_OR"                      { return 'OP_FUNCTION'; }
+"OP_XOR"                     { return 'OP_FUNCTION'; }
 "OP_EQUAL"                   { return 'OP_FUNCTION'; }
 /* Arithmetic */
 "OP_1ADD"                    { return 'OP_FUNCTION'; }
 "OP_1SUB"                    { return 'OP_FUNCTION'; }
+"OP_2MUL"                    { return 'OP_FUNCTION'; }
+"OP_2DIV"                    { return 'OP_FUNCTION'; }
 "OP_NEGATE"                  { return 'OP_FUNCTION'; }
 "OP_ABS"                     { return 'OP_FUNCTION'; }
 "OP_NOT"                     { return 'OP_FUNCTION'; }
 "OP_0NOTEQUAL"               { return 'OP_FUNCTION'; }
 "OP_ADD"                     { return 'OP_FUNCTION'; }
 "OP_SUB"                     { return 'OP_FUNCTION'; }
+"OP_MUL"                     { return 'OP_FUNCTION'; }
+"OP_DIV"                     { return 'OP_FUNCTION'; }
+"OP_MOD"                     { return 'OP_FUNCTION'; }
+"OP_LSHIFT"                  { return 'OP_FUNCTION'; }
+"OP_RSHIFT"                  { return 'OP_FUNCTION'; }
 "OP_BOOLAND"                 { return 'OP_FUNCTION'; }
 "OP_BOOLOR"                  { return 'OP_FUNCTION'; }
 "OP_NUMEQUAL"                { return 'OP_FUNCTION'; }

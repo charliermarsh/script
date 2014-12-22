@@ -2,6 +2,7 @@ jest.autoMockOff();
 
 var { base } = require('../src/config.js');
 var isPrime = require('../examples/primes.js');
+var betterIsPrime = require('../examples/better-primes.js');
 var lockWithPassword = require('../examples/password.js');
 
 describe('primes', () => {
@@ -9,18 +10,21 @@ describe('primes', () => {
         var n = 829;
         var script = '0x' + n.toString(base);
         expect(isPrime(script)).toBe(true);
+        expect(betterIsPrime(script)).toBe(true);
     });
 
     it('rejects a three-digit non-prime', () => {
         var n = 830;
         var script = '0x' + n.toString(base);
         expect(isPrime(script)).toBe(false);
+        expect(betterIsPrime(script)).toBe(false);
     });
 
     it('rejects a four-digit prime', () => {
         var n = 9973;
         var script = '0x' + n.toString(base);
         expect(isPrime(script)).toBe(false);
+        expect(betterIsPrime(script)).toBe(false);
     });
 });
 
