@@ -1,6 +1,6 @@
 jest.autoMockOff();
 
-var { base } = require('../config.js');
+var { base } = require('../src/config.js');
 var isPrime = require('../examples/primes.js');
 var lockWithPassword = require('../examples/password.js');
 

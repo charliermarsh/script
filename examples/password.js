@@ -1,6 +1,6 @@
-var { sha256 } = require('../crypto.js');
-var { base } = require('../config.js');
-var { unlock } = require('../index.js');
+var { sha256 } = require('../src/crypto.js');
+var { base } = require('../src/config.js');
+var { unlock } = require('../src/index.js');
 
 /*
  * Generate a locking script unlocked with password `password`.

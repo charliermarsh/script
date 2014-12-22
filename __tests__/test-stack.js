@@ -1,6 +1,6 @@
 jest.autoMockOff();
 
-var { evaluate } = require('../index.js');
+var { evaluate } = require('../src/index.js');
 
 describe('constants', () => {
     it('pushes 2-16 for OP_[2-16]', function() {
