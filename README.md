@@ -37,7 +37,7 @@ evaluate(script, /* enableDisabled */ true);
 // => true
 ```
 
-Further [examples](https://github.com/crm416/script/tree/master/src/examples) and [tests](https://github.com/crm416/script/tree/master/src/__tests__) are available in the repo.
+Further [examples](https://github.com/crm416/script/tree/master/examples) and [tests](https://github.com/crm416/script/tree/master/__tests__) are available in the repo.
 
 ## How It Works
 
