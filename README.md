@@ -1,7 +1,7 @@
 script
 ===
 
-JavaScript implementation of Script, Bitcoin's scripting language, along with a Script Playground, deployed [here](http://www.crmarsh.com/script-playground/). See my [blog post](crmarsh.com/script/) for more.
+JavaScript implementation of Script, Bitcoin's scripting language, along with a Script Playground, deployed [here](http://www.crmarsh.com/script-playground). See my [blog post](https://www.crmarsh.com/script) for more.
 
 The original ES6 source can be found on [GitHub](https://github.com/crm416/script) with the compiled ES5 output available for use as an [npm package](https://www.npmjs.com/package/bitcoin-script).
 
@@ -41,13 +41,13 @@ Further [examples](https://github.com/crm416/script/tree/master/examples) and [t
 
 ## How It Works
 
-Script programs are compiled to JavaScript using [Jison](http://zaach.github.io/jison/), with behavior following the specification outlined on the [Bitcoin Wiki](https://en.bitcoin.it/wiki/Script).
+Script programs are compiled to JavaScript using [Jison](https://github.com/zaach/jison), with behavior following the specification outlined on the [Bitcoin Wiki](https://en.bitcoin.it/wiki/Script).
 
 The live editor is based off of [Joel Burget's](http://joelburget.com/) [react-live-editor](https://github.com/joelburget/react-live-editor/).
 
 ## Functionality
 
-(A longer explanation of Script and this implementation can be found in my [blog post](crmarsh.com/script/).)
+(A longer explanation of Script and this implementation can be found in my [blog post](https://www.crmarsh.com/script).)
 
 Script is a stack-based programming language; that is, it operates by maintaining a stack onto/from which it pushes/pops as necessary. It is an intentionally simple language, containing if-statements, but no other control flow. The standard library includes functions for performing basic arithmetic and cryptographic operations, all of which can be found on the [Wiki](https://en.bitcoin.it/wiki/Script).
 
